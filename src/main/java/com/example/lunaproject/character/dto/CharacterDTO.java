@@ -18,22 +18,26 @@ public class CharacterDTO {
     private String characterName;
     private String characterClassName;
     private int characterLevel;
-    private double itemLevel;
+    private String itemMaxLevel;
+    private String itemAvgLevel;
     public CharacterDTO(final LoaCharacter character){
         this.id = character.getId();
         this.serverName = character.getServerName();
         this.characterName = character.getCharacterName();
         this.characterClassName = character.getCharacterClassName();
-        this.itemLevel = character.getItemLevel();
+        this.itemMaxLevel = character.getItemMaxLevel();
+        this.itemAvgLevel = character.getItemAvgLevel();
+        this.characterLevel = character.getCharacterLevel();
     }
     @Override
     public String toString() {
         return "CharacterInfoDTO{" +
                 "serverName='" + serverName + '\'' +
                 ", characterName='" + characterName + '\'' +
-                ", characterLevel=" + characterLevel +
+                ", characterLevel='" + characterLevel + '\'' +
                 ", characterClassName='" + characterClassName + '\'' +
-                ", itemAvgLevel='" + itemLevel + '\'' +
+                ", itemAvgLevel='" + itemAvgLevel + '\'' +
+                ", itemMaxLevel='" + itemMaxLevel + '\'' +
                 '}';
     }
 }

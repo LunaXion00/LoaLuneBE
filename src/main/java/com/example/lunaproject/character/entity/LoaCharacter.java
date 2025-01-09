@@ -29,5 +29,8 @@ public class LoaCharacter{
     private String characterClassName;
 
     @Column(nullable = false)
-    private double itemLevel;
+    private String itemMaxLevel;
+    @Column(nullable = false)
+    private String itemAvgLevel;
+
 }
