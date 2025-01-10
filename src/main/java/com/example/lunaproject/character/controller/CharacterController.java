@@ -32,22 +32,19 @@ public class CharacterController {
     public String getCharacterSiblings(@PathVariable(required = true) String mainCharacterName) {
         JSONArray character = service.Characters(mainCharacterName);
         ArrayList characters = new ArrayList();
-        String mainServer = "루페온";
         for(Object object: character){
             JSONObject jsonObject = (JSONObject) object;
-            if(jsonObject.get("ServerName").equals(mainServer)){
-                logger.info("find info for : "+object);
-                JSONObject characterName = service.characterProfiles((String)jsonObject.get("CharacterName"));
-                CharacterDTO dto = new CharacterDTO();
-                dto.setServerName((String)characterName.get("ServerName"));
-                dto.setCharacterName((String)characterName.get("CharacterName"));
-                dto.setCharacterClassName((String) characterName.get("CharacterClassName"));
-                dto.setCharacterLevel(((Long)characterName.get("CharacterLevel")).intValue());
-                dto.setItemLevel((String)characterName.get("ItemMaxLevel"));
-                dto.setCharacterClassName((String)characterName.get("CharacterClassName"));
-                characters.add(dto);
-                service.addCharacter(dto);
-            }
+            logger.info("find info for : "+object);
+            JSONObject characterName = service.characterProfiles((String)jsonObject.get("CharacterName"));
+            CharacterDTO dto = new CharacterDTO();
+            dto.setServerName((String)characterName.get("ServerName"));
+            dto.setCharacterName((String)characterName.get("CharacterName"));
+            dto.setCharacterClassName((String) characterName.get("CharacterClassName"));
+            dto.setCharacterLevel(((Long)characterName.get("CharacterLevel")).intValue());
+            dto.setItemLevel((String)characterName.get("ItemMaxLevel"));
+            dto.setCharacterClassName((String)characterName.get("CharacterClassName"));
+            characters.add(dto);
+            service.addCharacter(dto);
         }
         return characters.toString();
     }
