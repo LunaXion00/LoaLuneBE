@@ -5,7 +5,7 @@ import lombok.*;
 
 @Getter
 @Setter
-//@Table(name= "LoaCharacters")
+@Table(name= "loa_character")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -13,24 +13,25 @@ import lombok.*;
 public class LoaCharacter{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "loacharacter_id")
-    private long id;
+    @Column(name = "character_id")
+    private int id;
 
-    @Column(nullable = false)
+    @Column(name = "server")
     private String serverName;
 
-    @Column(nullable = false)
+    @Column(name = "character_name")
     private String characterName;
 
-    @Column(nullable = false)
+    @Column(name = "character_level")
     private int characterLevel;
 
-    @Column(nullable = false)
+    @Column(name = "class")
     private String characterClassName;
 
-    @Column(nullable = false)
+    @Column(name = "item_level_max")
     private String itemMaxLevel;
-    @Column(nullable = false)
+
+    @Column(name = "item_level_avg")
     private String itemAvgLevel;
 
 }

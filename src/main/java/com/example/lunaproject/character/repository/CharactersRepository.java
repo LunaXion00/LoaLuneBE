@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface CharactersRepository extends JpaRepository<LoaCharacter, String> {
-    @Query("select t from LoaCharacter t where t.characterName= ?1")
-    List<LoaCharacter> findByCharacterName(String characterName);
+    @Query("select t from LoaCharacter t")
+    List<LoaCharacter> findByCharacterName();
 }

@@ -40,4 +40,15 @@ public class CharacterDTO {
                 ", itemMaxLevel='" + itemMaxLevel + '\'' +
                 '}';
     }
+    public static LoaCharacter toEntity(CharacterDTO dto){
+        return LoaCharacter.builder()
+                .id((int) dto.getId())
+                .serverName(dto.getServerName())
+                .characterName(dto.getCharacterName())
+                .characterClassName(dto.getCharacterClassName())
+                .characterLevel(dto.getCharacterLevel())
+                .itemAvgLevel(dto.getItemAvgLevel())
+                .itemMaxLevel(dto.getItemMaxLevel())
+                .build();
+    }
 }

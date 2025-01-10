@@ -1,10 +1,14 @@
 package com.example.lunaproject.character.service;
 
+import com.example.lunaproject.character.entity.LoaCharacter;
+import com.example.lunaproject.character.repository.CharactersRepository;
+import jakarta.transaction.Transactional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -12,10 +16,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
 @Service
 public class CharacterService {
     private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+
+    private final CharactersRepository repository;
+
+    @Autowired
+    public CharacterService(CharactersRepository repository) {
+        this.repository = repository;
+    }
+
+
     public JSONArray Characters(String characterName){
         try{
             URL url = new URL("https://developer-lostark.game.onstove.com/characters/"+ URLEncoder.encode(characterName, "UTF-8") +"/siblings");
@@ -68,6 +82,25 @@ public class CharacterService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    public List<LoaCharacter> getLoaCharacterLists(){
+        return repository.findByCharacterName();
+    }
+    public List<LoaCharacter> create(final LoaCharacter loaCharacter){
+        return null;
+    }
+    @Transactional
+    public LoaCharacter testService(){
+        LoaCharacter character = LoaCharacter.builder()
+                .serverName("루페온")
+                .characterName("창수리는수리조아")
+                .characterClassName("창술사")
+                .characterLevel(60)
+                .itemAvgLevel("1580.0")
+                .itemMaxLevel("1580.0")
+                .build();
+        repository.save(character);
+        return repository.save(character);
     }
 
 }
