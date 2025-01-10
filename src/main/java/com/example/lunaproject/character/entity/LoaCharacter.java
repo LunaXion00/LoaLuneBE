@@ -28,10 +28,7 @@ public class LoaCharacter{
     @Column(name = "class")
     private String characterClassName;
 
-    @Column(name = "item_level_max")
-    private String itemMaxLevel;
-
-    @Column(name = "item_level_avg")
-    private String itemAvgLevel;
+    @Column(name = "item_level")
+    private String itemLevel;
 
 }

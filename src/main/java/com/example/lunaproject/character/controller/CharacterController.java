@@ -43,10 +43,10 @@ public class CharacterController {
                 dto.setCharacterName((String)characterName.get("CharacterName"));
                 dto.setCharacterClassName((String) characterName.get("CharacterClassName"));
                 dto.setCharacterLevel(((Long)characterName.get("CharacterLevel")).intValue());
-                dto.setItemAvgLevel((String)characterName.get("ItemAvgLevel"));
+                dto.setItemLevel((String)characterName.get("ItemMaxLevel"));
                 dto.setCharacterClassName((String)characterName.get("CharacterClassName"));
-                dto.setItemMaxLevel((String)characterName.get("ItemMaxLevel"));
                 characters.add(dto);
+                service.addCharacter(dto);
             }
         }
         return characters.toString();

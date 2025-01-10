@@ -18,15 +18,13 @@ public class CharacterDTO {
     private String characterName;
     private String characterClassName;
     private int characterLevel;
-    private String itemMaxLevel;
-    private String itemAvgLevel;
+    private String itemLevel;
     public CharacterDTO(final LoaCharacter character){
         this.id = character.getId();
         this.serverName = character.getServerName();
         this.characterName = character.getCharacterName();
         this.characterClassName = character.getCharacterClassName();
-        this.itemMaxLevel = character.getItemMaxLevel();
-        this.itemAvgLevel = character.getItemAvgLevel();
+        this.itemLevel = character.getItemLevel();
         this.characterLevel = character.getCharacterLevel();
     }
     @Override
@@ -36,8 +34,7 @@ public class CharacterDTO {
                 ", characterName='" + characterName + '\'' +
                 ", characterLevel='" + characterLevel + '\'' +
                 ", characterClassName='" + characterClassName + '\'' +
-                ", itemAvgLevel='" + itemAvgLevel + '\'' +
-                ", itemMaxLevel='" + itemMaxLevel + '\'' +
+                ", itemLevel='" + itemLevel + '\'' +
                 '}';
     }
     public static LoaCharacter toEntity(CharacterDTO dto){
@@ -47,8 +44,7 @@ public class CharacterDTO {
                 .characterName(dto.getCharacterName())
                 .characterClassName(dto.getCharacterClassName())
                 .characterLevel(dto.getCharacterLevel())
-                .itemAvgLevel(dto.getItemAvgLevel())
-                .itemMaxLevel(dto.getItemMaxLevel())
+                .itemLevel(dto.getItemLevel())
                 .build();
     }
 }

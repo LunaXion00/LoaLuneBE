@@ -1,5 +1,6 @@
 package com.example.lunaproject.character.service;
 
+import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
 import jakarta.transaction.Transactional;
@@ -83,12 +84,6 @@ public class CharacterService {
             throw new RuntimeException(e);
         }
     }
-    public List<LoaCharacter> getLoaCharacterLists(){
-        return repository.findByCharacterName();
-    }
-    public List<LoaCharacter> create(final LoaCharacter loaCharacter){
-        return null;
-    }
     @Transactional
     public LoaCharacter testService(){
         LoaCharacter character = LoaCharacter.builder()
@@ -96,11 +91,19 @@ public class CharacterService {
                 .characterName("창수리는수리조아")
                 .characterClassName("창술사")
                 .characterLevel(60)
-                .itemAvgLevel("1580.0")
-                .itemMaxLevel("1580.0")
+                .itemLevel("1580.0")
                 .build();
-        repository.save(character);
         return repository.save(character);
     }
-
+    @Transactional
+    public LoaCharacter addCharacter(CharacterDTO dto){
+        LoaCharacter character = LoaCharacter.builder()
+                .serverName(dto.getServerName())
+                .characterName(dto.getCharacterName())
+                .characterClassName(dto.getCharacterClassName())
+                .characterLevel(dto.getCharacterLevel())
+                .itemLevel(dto.getItemLevel())
+                .build();
+        return repository.save(character);
+    }
 }
