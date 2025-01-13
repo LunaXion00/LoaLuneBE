@@ -3,13 +3,16 @@ package com.example.lunaproject.character.service;
 import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
+import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -20,16 +23,14 @@ import java.net.URLEncoder;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CharacterService {
     private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
 
     private final CharactersRepository repository;
-
-    @Autowired
-    public CharacterService(CharactersRepository repository) {
-        this.repository = repository;
-    }
-
+    private final LostarkCharacterApiClient apiClient;
+    @Value("${Lostark-API-KEY")
+    String apiKey;
 
     public JSONArray Characters(String characterName){
         try{
@@ -38,7 +39,7 @@ public class CharacterService {
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setRequestProperty("accept", "application/json");
             httpURLConnection.setRequestProperty("authorization",
-                    "bearer API-KEY");
+                    "bearer "+apiKey);
             int responseCode = httpURLConnection.getResponseCode();
             InputStream inputStream;
             if(responseCode == 200){
@@ -85,17 +86,6 @@ public class CharacterService {
         }
     }
     @Transactional
-    public LoaCharacter testService(){
-        LoaCharacter character = LoaCharacter.builder()
-                .serverName("루페온")
-                .characterName("창수리는수리조아")
-                .characterClassName("창술사")
-                .characterLevel(60)
-                .itemLevel("1580.0")
-                .build();
-        return repository.save(character);
-    }
-    @Transactional
     public LoaCharacter addCharacter(CharacterDTO dto){
         LoaCharacter character = LoaCharacter.builder()
                 .serverName(dto.getServerName())
@@ -105,5 +95,9 @@ public class CharacterService {
                 .itemLevel(dto.getItemLevel())
                 .build();
         return repository.save(character);
+    }
+    @Transactional
+    public List<LoaCharacter> retrieve(final String Charactername){
+        return repository.findByCharacterName(Charactername);
     }
 }

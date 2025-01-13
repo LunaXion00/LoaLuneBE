@@ -29,6 +29,6 @@ public class LoaCharacter{
     private String characterClassName;
 
     @Column(name = "item_level")
-    private String itemLevel;
+    private Double itemLevel;
 
 }

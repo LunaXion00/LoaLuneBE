@@ -18,7 +18,7 @@ public class CharacterDTO {
     private String characterName;
     private String characterClassName;
     private int characterLevel;
-    private String itemLevel;
+    private Double itemLevel;
     public CharacterDTO(final LoaCharacter character){
         this.id = character.getId();
         this.serverName = character.getServerName();

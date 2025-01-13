@@ -41,15 +41,11 @@ public class CharacterController {
             dto.setCharacterName((String)characterName.get("CharacterName"));
             dto.setCharacterClassName((String) characterName.get("CharacterClassName"));
             dto.setCharacterLevel(((Long)characterName.get("CharacterLevel")).intValue());
-            dto.setItemLevel((String)characterName.get("ItemMaxLevel"));
+            dto.setItemLevel((Double)characterName.get("ItemMaxLevel"));
             dto.setCharacterClassName((String)characterName.get("CharacterClassName"));
             characters.add(dto);
             service.addCharacter(dto);
         }
         return characters.toString();
-    }
-    @GetMapping("/DB/{characterName}")
-    public String characterList(@PathVariable String characterName){
-        return service.testService().getCharacterName();
     }
 }
