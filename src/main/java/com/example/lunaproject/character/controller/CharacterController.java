@@ -34,10 +34,10 @@ public class CharacterController {
         ArrayList characters = new ArrayList();
         for(Object object: character){
             JSONObject jsonObject = (JSONObject) object;
-            JSONObject characterName = service.characterProfiles((String)jsonObject.get("CharacterName"));
+            JSONObject characterName = service.characterDetails((String)jsonObject.get("CharacterName"));
             CharacterDTO dto = new ObjectMapper().readValue(characterName.toString(), CharacterDTO.class);
             characters.add(dto);
-            service.addCharacter(dto);
+            service.addCharacterToRepository(dto);
         }
         return characters.toString();
     }

@@ -34,43 +34,24 @@ public class CharacterService {
 
     public JSONArray Characters(String characterName){
         try{
-            JSONArray array = apiClient.findCharacters(characterName, apiKey);
+            JSONArray array = apiClient.findCharactersByApi(characterName, apiKey);
             logger.info("----"+array.toString());
             return array;
         } catch(Exception e){
             throw new RuntimeException(e);
         }
     }
-    public JSONObject characterProfiles(String characterName){
+    public JSONObject characterDetails(String characterName){
         try {
-            logger.info("=================="+characterName);
-            characterName = URLEncoder.encode(characterName, "UTF-8");
-            URL url = new URL("https://developer-lostark.game.onstove.com/armories/characters/"+characterName+"/profiles");
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.setRequestProperty("authorization", "Bearer "+apiKey);
-            httpURLConnection.setRequestProperty("accept","application/json");
-            httpURLConnection.setRequestProperty("content-Type","application/json");
-            httpURLConnection.setDoOutput(true);
-
-            int result = httpURLConnection.getResponseCode();
-            InputStream inputStream;
-            if(result == 200) {
-                inputStream = httpURLConnection.getInputStream();
-            } else {
-                inputStream = httpURLConnection.getErrorStream();
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-
-            JSONParser parser = new JSONParser();
-            JSONObject object = (JSONObject) parser.parse(inputStreamReader);
+            JSONObject object = apiClient.findCharacterDetailsByApi(characterName, apiKey);
+            logger.info("===="+object.toString());
             return object;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     @Transactional
-    public LoaCharacter addCharacter(CharacterDTO dto){
+    public LoaCharacter addCharacterToRepository(CharacterDTO dto){
         LoaCharacter character = LoaCharacter.builder()
                 .serverName(dto.getServerName())
                 .characterName(dto.getCharacterName())

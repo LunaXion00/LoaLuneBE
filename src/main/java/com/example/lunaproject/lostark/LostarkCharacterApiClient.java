@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class LostarkCharacterApiClient {
     private final LostarkApiClient apiClient;
     public List<LoaCharacter> createCharacterList(String characterName, String apiKey){
         try{
-            JSONArray jsonArray = findCharacters(characterName, apiKey);
+            JSONArray jsonArray = findCharactersByApi(characterName, apiKey);
             List<LoaCharacter> characterList = new ArrayList<>();
             for(Object o: jsonArray){
                 JSONObject jsonObject = (JSONObject) o;
@@ -49,7 +50,7 @@ public class LostarkCharacterApiClient {
             throw new RuntimeException(e);
         }
     }
-    public JSONArray findCharacters(String characterName, String apiKey){
+    public JSONArray findCharactersByApi(String characterName, String apiKey){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
         InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
@@ -57,6 +58,20 @@ public class LostarkCharacterApiClient {
         try{
             JSONArray array = (JSONArray) parser.parse(inputStreamReader);
             return array;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public JSONObject findCharacterDetailsByApi(String characterName, String apiKey){
+        String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
+        String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedCharacterName + "/profiles";
+        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+        JSONParser parser = new JSONParser();
+        try{
+            JSONObject object = (JSONObject) parser.parse(inputStreamReader);
+            return object;
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
