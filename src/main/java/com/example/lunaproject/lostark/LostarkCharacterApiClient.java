@@ -42,7 +42,6 @@ public class LostarkCharacterApiClient {
                         .build();
                 characterList.add(character);
             }
-            AtomicInteger sortNumber = new AtomicInteger();
             List<LoaCharacter> sortedList = characterList.stream()
                     .sorted(Comparator.comparing(LoaCharacter::getItemLevel).reversed()).collect(Collectors.toList());
             return sortedList;
