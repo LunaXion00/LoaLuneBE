@@ -4,23 +4,17 @@ import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
 import com.example.lunaproject.lostark.LostarkCharacterApiClient;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
+import java.util.*;
+import java.util.Optional.*;
 
 @Service
 @RequiredArgsConstructor
@@ -61,8 +55,11 @@ public class CharacterService {
                 .build();
         return repository.save(character);
     }
-    @Transactional
-    public List<LoaCharacter> retrieve(final String Charactername){
-        return repository.findByCharacterName(Charactername);
+
+
+    @Transactional(readOnly = true)
+    public LoaCharacter get(long id, String characterName){
+        return repository.findByCharacterName(characterName).orElseThrow(
+                () -> new IllegalArgumentException("characterName = " + characterName + " : 존재하지 않는 캐릭터"));
     }
 }

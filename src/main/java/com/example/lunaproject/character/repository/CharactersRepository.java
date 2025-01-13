@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CharactersRepository extends JpaRepository<LoaCharacter, String> {
     @Query("select t from LoaCharacter t Where t.characterName= :Charactername")
-    List<LoaCharacter> findByCharacterName(String Charactername);
+    Optional<LoaCharacter> findByCharacterName(String charactername);
 }

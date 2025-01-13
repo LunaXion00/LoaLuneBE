@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -28,7 +25,7 @@ public class CharacterController {
 
     private final CharacterService service;
 
-    @GetMapping("/{mainCharacterName}")
+    @PostMapping("/{mainCharacterName}")
     public String getCharacterSiblings(@PathVariable(required = true) String mainCharacterName) throws IOException {
         JSONArray character = service.Characters(mainCharacterName);
         ArrayList characters = new ArrayList();
@@ -41,4 +38,9 @@ public class CharacterController {
         }
         return characters.toString();
     }
+
+//    @GetMapping("/{CharacterName}")
+//    public LoaCharacter<?> retrieveCharacter(){
+//
+//    }
 }
