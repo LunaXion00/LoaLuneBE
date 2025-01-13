@@ -2,7 +2,11 @@ package com.example.lunaproject.character.dto;
 
 
 import com.example.lunaproject.character.entity.LoaCharacter;
-import jakarta.persistence.Column;
+import com.example.lunaproject.global.utils.DoubleDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +16,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CharacterDTO {
     private long id;
+    @JsonProperty("ServerName")
     private String serverName;
+
+    @JsonProperty("CharacterName")
     private String characterName;
+
+    @JsonProperty("CharacterClassName")
     private String characterClassName;
+
+    @JsonProperty("CharacterLevel")
     private int characterLevel;
+
+    @JsonProperty("ItemMaxLevel")
+    @JsonDeserialize(using = DoubleDeserializer.class)
     private Double itemLevel;
+
     public CharacterDTO(final LoaCharacter character){
         this.id = character.getId();
         this.serverName = character.getServerName();

@@ -29,31 +29,15 @@ public class CharacterService {
 
     private final CharactersRepository repository;
     private final LostarkCharacterApiClient apiClient;
-    @Value("${Lostark-API-KEY")
+    @Value("${Lostark-API-KEY}")
     String apiKey;
 
     public JSONArray Characters(String characterName){
         try{
-            URL url = new URL("https://developer-lostark.game.onstove.com/characters/"+ URLEncoder.encode(characterName, "UTF-8") +"/siblings");
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.setRequestProperty("accept", "application/json");
-            httpURLConnection.setRequestProperty("authorization",
-                    "bearer "+apiKey);
-            int responseCode = httpURLConnection.getResponseCode();
-            InputStream inputStream;
-            if(responseCode == 200){
-                inputStream = httpURLConnection.getInputStream();
-            }else{
-                inputStream = httpURLConnection.getErrorStream();
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-
-            JSONParser parser = new JSONParser();
-            JSONArray array = (JSONArray) parser.parse(inputStreamReader);
-            logger.info("====================="+array.toString());
+            JSONArray array = apiClient.findCharacters(characterName, apiKey);
+            logger.info("----"+array.toString());
             return array;
-        }catch(Exception e){
+        } catch(Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -64,7 +48,7 @@ public class CharacterService {
             URL url = new URL("https://developer-lostark.game.onstove.com/armories/characters/"+characterName+"/profiles");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.setRequestProperty("authorization", "Bearer API-KEY");
+            httpURLConnection.setRequestProperty("authorization", "Bearer "+apiKey);
             httpURLConnection.setRequestProperty("accept","application/json");
             httpURLConnection.setRequestProperty("content-Type","application/json");
             httpURLConnection.setDoOutput(true);
