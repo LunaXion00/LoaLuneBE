@@ -1,5 +1,7 @@
 package com.example.lunaproject.character.entity;
 
+import com.example.lunaproject.streamer.entity.Streamer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,5 +32,10 @@ public class LoaCharacter{
 
     @Column(name = "item_level")
     private Double itemLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "streamer_id")
+    @JsonBackReference
+    private Streamer streamer;
 
 }

@@ -6,7 +6,6 @@ import com.example.lunaproject.global.utils.DoubleDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
