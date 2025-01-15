@@ -18,7 +18,7 @@ public class Streamer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "streamer_id")
-    private int id;
+    private Long id;
 
     @Column(name="streamer_name")
     private String streamerName;
@@ -33,5 +33,14 @@ public class Streamer {
     public void addCharacter(LoaCharacter character){
         characters.add(character);
         character.setStreamer(this);
+    }
+    public void editMainCharacter(String mainCharacter){
+        this.mainCharacter = mainCharacter;
+    }
+    public void createCharacter(List<LoaCharacter> characterList, String mainCharacter){
+        characterList.stream()
+                .peek(character->character.setStreamer(this))
+                .forEach(characters::add);
+        this.mainCharacter = mainCharacter;
     }
 }
