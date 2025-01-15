@@ -54,7 +54,7 @@ public class CharacterDTO {
     }
     public static LoaCharacter toEntity(CharacterDTO dto){
         return LoaCharacter.builder()
-                .id((int) dto.getId())
+                .id((Long) dto.getId())
                 .serverName(dto.getServerName())
                 .characterName(dto.getCharacterName())
                 .characterClassName(dto.getCharacterClassName())

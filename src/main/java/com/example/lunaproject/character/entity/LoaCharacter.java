@@ -16,7 +16,7 @@ public class LoaCharacter{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "character_id")
-    private int id;
+    private Long id;
 
     @Column(name = "server")
     private String serverName;

@@ -5,6 +5,7 @@ import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
 import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.entity.Streamer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.Optional.*;
 
@@ -63,5 +65,15 @@ public class CharacterService {
     public LoaCharacter get(long id, String characterName){
         return repository.findByCharacterName(characterName).orElseThrow(
                 () -> new IllegalArgumentException("characterName = " + characterName + " : 존재하지 않는 캐릭터"));
+    }
+
+    @Transactional
+    public LoaCharacter registerCharacter(String characterName, Streamer streamer){
+        Optional<LoaCharacter> exist = repository.findByCharacterName(characterName);
+        if(exist.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 캐릭터: "+ characterName);
+        }
+//        LoaCharacter characterInfo = apiClient.findCharacterDetailsByApi(characterName, apiKey);
+        return null;
     }
 }
