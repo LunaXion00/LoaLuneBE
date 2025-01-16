@@ -26,6 +26,9 @@ public class Streamer {
     @Column(name="main_character")
     private String mainCharacter;
 
+    @Column(name="channel_id")
+    private String channelId;
+
     @OneToMany(mappedBy = "streamer", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<LoaCharacter> characters;

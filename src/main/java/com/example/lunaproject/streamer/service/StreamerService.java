@@ -6,6 +6,8 @@ import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ public class StreamerService {
     private final StreamerRepository streamerRepository;
     private final CharacterService characterService;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
+    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+
     @Value("${Lostark-API-KEY}")
     String apiKey;
 
@@ -34,6 +38,7 @@ public class StreamerService {
         Streamer streamer = Streamer.builder()
                 .streamerName(streamerName)
                 .mainCharacter(mainCharacter)
+                .channelId(requestDTO.getChannelId())
                 .characters(new ArrayList<>())
                 .build();
         streamer.createCharacter(characterList, mainCharacter);
