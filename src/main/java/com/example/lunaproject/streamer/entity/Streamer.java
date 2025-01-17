@@ -33,6 +33,8 @@ public class Streamer {
     @JsonManagedReference
     private List<LoaCharacter> characters;
 
+    @Column(name="channel_image_url")
+    private String channelImageUrl;
     public void addCharacter(LoaCharacter character){
         characters.add(character);
         character.setStreamer(this);

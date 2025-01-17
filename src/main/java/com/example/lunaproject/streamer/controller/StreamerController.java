@@ -18,7 +18,7 @@ public class StreamerController {
     public ResponseEntity<String> uploadStreamerInfo(@RequestBody StreamerRequestDTO requestDTO) throws IOException {
         try{
             service.createStreamer(requestDTO);
-            return ResponseEntity.ok("스트리머 "+requestDTO.getStreamerName()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
+            return ResponseEntity.ok("스트리머 "+requestDTO.getChannelId()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
         } catch(IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

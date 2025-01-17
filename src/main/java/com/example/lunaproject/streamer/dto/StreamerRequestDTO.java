@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class StreamerRequestDTO {
-    private String streamerName;
     private String mainCharacter;
     private String channelId;
 }

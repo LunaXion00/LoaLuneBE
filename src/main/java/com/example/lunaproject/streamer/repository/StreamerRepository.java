@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StreamerRepository extends JpaRepository<Streamer, Long>, StreamerCustomRepository {
     Boolean existsByStreamerName(String streamerName);
+    Boolean existsByChannelId(String channelId);
 }
