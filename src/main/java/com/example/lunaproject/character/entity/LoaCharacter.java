@@ -38,4 +38,6 @@ public class LoaCharacter{
     @JsonBackReference
     private Streamer streamer;
 
+    @Column(name = "character_image")
+    private String characterImage;
 }

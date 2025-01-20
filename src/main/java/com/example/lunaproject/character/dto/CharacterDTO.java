@@ -34,6 +34,8 @@ public class CharacterDTO {
     @JsonDeserialize(using = DoubleDeserializer.class)
     private Double itemLevel;
 
+    @JsonProperty("ChacterImage")
+    private String characterImage;
     public CharacterDTO(final LoaCharacter character){
         this.id = character.getId();
         this.serverName = character.getServerName();

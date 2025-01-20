@@ -5,7 +5,6 @@ import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
 import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.entity.Streamer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,9 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.*;
-import java.util.Optional.*;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +53,7 @@ public class CharacterService {
                 .characterLevel(dto.getCharacterLevel())
                 .itemLevel(dto.getItemLevel())
                 .streamer(Streamer.builder().streamerName("포셔").build())
+                .characterImage(dto.getCharacterImage())
                 .build();
         return repository.save(character);
     }

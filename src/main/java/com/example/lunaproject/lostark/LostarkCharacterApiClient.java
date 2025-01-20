@@ -1,6 +1,7 @@
 package com.example.lunaproject.lostark;
 
 import com.example.lunaproject.character.entity.LoaCharacter;
+import com.example.lunaproject.character.service.CharacterService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,18 +31,22 @@ import java.util.stream.Collectors;
 @Transactional
 public class LostarkCharacterApiClient {
     private final LostarkApiClient apiClient;
+    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+
     public List<LoaCharacter> createCharacterList(String characterName, String apiKey){
         try{
             JSONArray jsonArray = findCharactersByApi(characterName, apiKey);
             List<LoaCharacter> characterList = new ArrayList<>();
             for(Object o: jsonArray){
                 JSONObject jsonObject = (JSONObject) o;
+                JSONObject details = findCharacterDetailsByApi(jsonObject.get("CharacterName").toString(), apiKey);
                 LoaCharacter character = LoaCharacter.builder()
-                        .characterName(jsonObject.get("CharacterName").toString())
-                        .serverName(jsonObject.get("ServerName").toString())
-                        .characterClassName(jsonObject.get("CharacterClassName").toString())
-                        .characterLevel(Integer.parseInt(jsonObject.get("CharacterLevel").toString()))
-                        .itemLevel(Double.parseDouble(jsonObject.get("ItemMaxLevel").toString().replace(",", "")))
+                        .characterName(details.get("CharacterName").toString())
+                        .serverName(getStringOrNull(details.get("ServerName")))
+                        .characterClassName(getStringOrNull(details.get("CharacterClassName")))
+                        .characterLevel(Integer.parseInt(details.get("CharacterLevel").toString()))
+                        .itemLevel(Double.parseDouble(details.get("ItemMaxLevel").toString().replace(",", "")))
+                        .characterImage(getStringOrNull(details.get("CharacterImage")))
                         .build();
                 characterList.add(character);
             }
@@ -50,6 +57,11 @@ public class LostarkCharacterApiClient {
             throw new RuntimeException(e);
         }
     }
+
+    public String getStringOrNull(Object value){
+        return value != null ? value.toString() : null;
+    }
+
     public JSONArray findCharactersByApi(String characterName, String apiKey){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
@@ -71,6 +83,7 @@ public class LostarkCharacterApiClient {
         JSONParser parser = new JSONParser();
         try{
             JSONObject object = (JSONObject) parser.parse(inputStreamReader);
+            logger.info(object.toString());
             return object;
         } catch (IOException e) {
             throw new RuntimeException(e);
