@@ -1,5 +1,6 @@
 package com.example.lunaproject.streamer.controller;
 
+import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,7 +27,12 @@ public class StreamerController {
         }
     }
     @GetMapping("/{streamerName}")
-    public ResponseEntity<String> getStreamerInfo(@RequestBody StreamerRequestDTO dto){
-        return ResponseEntity.badRequest().body("not defined yet");
+    public ResponseEntity<String> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
+        try{
+            List<LoaCharacter> characterList = service.getStreamerInfo(streamerName);
+            return ResponseEntity.ok().body(characterList.stream().map(LoaCharacter::getCharacterName).collect(Collectors.toList()).toString());
+        } catch(IllegalArgumentException e){
+            return ResponseEntity.badRequest().body("Streamer Finding Error"+e.getMessage());
+        }
     }
 }

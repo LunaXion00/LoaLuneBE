@@ -71,9 +71,18 @@ public class StreamerService {
         Streamer streamer = get(streamerName);
 
     }
+
     private static void validateCreateStreamer(){
 
     }
+    public List<LoaCharacter> getStreamerInfo(String streamerName){
+        boolean exists = streamerRepository.existsByStreamerName(streamerName);
+        if(!exists) throw new IllegalArgumentException(streamerName+"은(는) 등록되지 않은 스트리머명입니다.");
+        Streamer streamer = streamerRepository.get(streamerName);
+        return streamer.getCharacters();
+    }
+
+
     private List<LoaCharacter> createAndCalculateCharaters(String characterName){
         List<LoaCharacter> characterList = lostarkCharacterApiClient.createCharacterList(characterName, apiKey);
         return characterList.stream().collect(Collectors.toList());
