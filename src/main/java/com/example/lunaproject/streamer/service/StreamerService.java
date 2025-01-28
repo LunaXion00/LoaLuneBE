@@ -7,11 +7,11 @@ import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.ChzzkResponseDTO;
 import com.example.lunaproject.streamer.dto.StreamerDTO;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
+import com.example.lunaproject.streamer.dto.StreamerWithCharacterDTO;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class StreamerService {
     private final StreamerRepository streamerRepository;
-    private final CharacterService characterService;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ChzzkStreamerApiClient chzzkStreamerApiClient;
+    private final CharacterService characterService;
     private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
 
     @Value("${Lostark-API-KEY}")
@@ -75,16 +75,35 @@ public class StreamerService {
     private static void validateCreateStreamer(){
 
     }
-    public List<LoaCharacter> getStreamerInfo(String streamerName){
-        boolean exists = streamerRepository.existsByStreamerName(streamerName);
-        if(!exists) throw new IllegalArgumentException(streamerName+"은(는) 등록되지 않은 스트리머명입니다.");
-        Streamer streamer = streamerRepository.get(streamerName);
-        return streamer.getCharacters();
-    }
+    public StreamerWithCharacterDTO getStreamerInfo(String streamerName){
+        Streamer streamer = streamerRepository.findByStreamerName(streamerName)
+                .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
 
+        List<CharacterDTO> characterDTOS = streamer.getCharacters().stream()
+                .map(CharacterDTO::new)
+                .collect(Collectors.toList());
+        logger.info(characterDTOS.toString());
+        return StreamerWithCharacterDTO.builder()
+                .streamerName(streamerName)
+                .mainCharacter(streamer.getMainCharacter())
+                .channelId(streamer.getChannelId())
+                .channelImageUrl(streamer.getChannelImageUrl())
+                .characters(characterDTOS)
+                .build();
+
+    }
+    public boolean existStreamer(String streamerName){
+        return streamerRepository.existsByStreamerName(streamerName);
+    }
 
     private List<LoaCharacter> createAndCalculateCharaters(String characterName){
         List<LoaCharacter> characterList = lostarkCharacterApiClient.createCharacterList(characterName, apiKey);
         return characterList.stream().collect(Collectors.toList());
+    }
+    @Transactional
+    public void updateStreamerCharacters(String streamerName){
+        Streamer streamer = streamerRepository.findByStreamerName(streamerName)
+                .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
+        characterService.updateSibling(streamerName);
     }
 }

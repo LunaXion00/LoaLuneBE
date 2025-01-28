@@ -1,16 +1,15 @@
 package com.example.lunaproject.streamer.controller;
 
-import com.example.lunaproject.character.entity.LoaCharacter;
+import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
+import com.example.lunaproject.streamer.dto.StreamerWithCharacterDTO;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,13 +25,22 @@ public class StreamerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/{streamerName}")
-    public ResponseEntity<String> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
+    @GetMapping("/{streamerName}/details")
+    public ResponseEntity<StreamerWithCharacterDTO> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
         try{
-            List<LoaCharacter> characterList = service.getStreamerInfo(streamerName);
-            return ResponseEntity.ok().body(characterList.stream().map(LoaCharacter::getCharacterName).collect(Collectors.toList()).toString());
+            StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName);
+            return ResponseEntity.ok().body(dto);
         } catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body("Streamer Finding Error"+e.getMessage());
+            return (ResponseEntity<StreamerWithCharacterDTO>) ResponseEntity.badRequest();
+        }
+    }
+    @PutMapping("/{streamerName}/update-characters")
+    public ResponseEntity<String> updateStreamerCharacters(@PathVariable(required = true) String streamerName) throws IOException{
+        try{
+            service.updateStreamerCharacters(streamerName);
+            return ResponseEntity.ok().body(streamerName+"님의 캐릭터 정보가 갱신되었습니다.");
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

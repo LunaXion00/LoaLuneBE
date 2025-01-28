@@ -19,25 +19,5 @@ import java.util.ArrayList;
 @RequestMapping("character")
 public class CharacterController {
     private static final Logger logger = LoggerFactory.getLogger(CharacterController.class);
-
     private final CharacterService service;
-
-    @PostMapping("/{mainCharacterName}")
-    public String getCharacterSiblings(@PathVariable(required = true) String mainCharacterName) throws IOException {
-        JSONArray character = service.Characters(mainCharacterName);
-        ArrayList characters = new ArrayList();
-        for(Object object: character){
-            JSONObject jsonObject = (JSONObject) object;
-            JSONObject characterName = service.characterDetails((String)jsonObject.get("CharacterName"));
-            CharacterDTO dto = new ObjectMapper().readValue(characterName.toString(), CharacterDTO.class);
-            characters.add(dto);
-            service.addCharacterToRepository(dto);
-        }
-        return characters.toString();
-    }
-
-//    @GetMapping("/{CharacterName}")
-//    public LoaCharacter<?> retrieveCharacter(){
-//
-//    }
 }
