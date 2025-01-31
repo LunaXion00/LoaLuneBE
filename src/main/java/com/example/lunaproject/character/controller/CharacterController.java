@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("character")
+@RequestMapping("characters")
 public class CharacterController {
     private static final Logger logger = LoggerFactory.getLogger(CharacterController.class);
     private final CharacterService service;

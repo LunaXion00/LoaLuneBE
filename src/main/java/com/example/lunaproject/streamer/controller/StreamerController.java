@@ -1,6 +1,7 @@
 package com.example.lunaproject.streamer.controller;
 
 import com.example.lunaproject.character.dto.CharacterDTO;
+import com.example.lunaproject.streamer.dto.StreamerDTO;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.example.lunaproject.streamer.dto.StreamerWithCharacterDTO;
 import com.example.lunaproject.streamer.service.StreamerService;
@@ -13,14 +14,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("streamer")
+@RequestMapping("streamers")
 public class StreamerController {
     private final StreamerService service;
     @PostMapping("/upload")
     public ResponseEntity<String> uploadStreamerInfo(@RequestBody StreamerRequestDTO requestDTO) throws IOException {
         try{
-            service.createStreamer(requestDTO);
-            return ResponseEntity.ok("스트리머 "+requestDTO.getChannelId()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
+            StreamerDTO dto = service.createStreamer(requestDTO);
+            return ResponseEntity.ok("스트리머 "+dto.getStreamerName()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
         } catch(IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
