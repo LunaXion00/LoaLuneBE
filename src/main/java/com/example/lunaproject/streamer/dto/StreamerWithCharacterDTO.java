@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class StreamerWithCharacterDTO {
     private String channelId;
     private String channelImageUrl;
     private List<CharacterDTO> characters;
+    private Set<TagDTO> tags;
 }

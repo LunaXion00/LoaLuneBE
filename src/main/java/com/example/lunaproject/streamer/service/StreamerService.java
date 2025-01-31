@@ -4,10 +4,7 @@ import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.service.CharacterService;
 import com.example.lunaproject.lostark.LostarkCharacterApiClient;
-import com.example.lunaproject.streamer.dto.ChzzkResponseDTO;
-import com.example.lunaproject.streamer.dto.StreamerDTO;
-import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
-import com.example.lunaproject.streamer.dto.StreamerWithCharacterDTO;
+import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,18 +38,21 @@ public class StreamerService {
     public void createStreamer(StreamerRequestDTO requestDTO) throws JsonProcessingException {
         String mainCharacter = requestDTO.getMainCharacter();
         String channelId = requestDTO.getChannelId();
-        JSONObject format = chzzkStreamerApiClient.findStreamerByChannelId(channelId);
-        ChzzkResponseDTO chzzkResponseDTO =  new ObjectMapper().readValue(format.toString(), ChzzkResponseDTO.class);
-        logger.info("chzzkresponse: " + chzzkResponseDTO.toString());
+
+        if(existStreamer(channelId)) throw new IllegalArgumentException("해당 스트리머는 이미 등록되어있습니다.");
+
+        ChzzkResponseDTO chzzkResponseDTO =  new ObjectMapper().readValue(chzzkStreamerApiClient.findStreamerByChannelId(channelId).toString(), ChzzkResponseDTO.class);
         ChzzkResponseDTO.Content content = chzzkResponseDTO.getContent();
-        StreamerDTO dto = new StreamerDTO();
-        dto.setStreamerName(content.getChannelName());
-        dto.setChannelImageUrl(content.getChannelImageUrl());
+
+        StreamerDTO dto = new StreamerDTO()
+                .builder()
+                .streamerName(content.getChannelName())
+                .channelImageUrl(content.getChannelImageUrl())
+                .build();
+
         logger.info("Streamer API information: "+dto.toString());
 
-        boolean exists = streamerRepository.existsByChannelId(channelId);
-        if(exists) throw new IllegalArgumentException("해당 스트리머는 이미 등록되어있습니다.");
-        List<LoaCharacter> characterList = createAndCalculateCharaters(mainCharacter);
+        List<LoaCharacter> characterList = createStreamerCharacterList(mainCharacter);
         Streamer streamer = Streamer.builder()
                 .streamerName(dto.getStreamerName())
                 .mainCharacter(mainCharacter)
@@ -59,22 +60,22 @@ public class StreamerService {
                 .characters(new ArrayList<>())
                 .channelImageUrl(dto.getChannelImageUrl())
                 .build();
-        streamer.createCharacter(characterList, mainCharacter);
+
+        streamer.createCharacter(characterList);
         streamerRepository.save(streamer);
     }
+
     @Transactional(readOnly = true)
     public Streamer get(String streamerName){
         return streamerRepository.get(streamerName);
     }
+
     @Transactional
     public void editMainCharacter(String streamerName, String mainCharacter){
         Streamer streamer = get(streamerName);
 
     }
 
-    private static void validateCreateStreamer(){
-
-    }
     public StreamerWithCharacterDTO getStreamerInfo(String streamerName){
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
@@ -82,24 +83,30 @@ public class StreamerService {
         List<CharacterDTO> characterDTOS = streamer.getCharacters().stream()
                 .map(CharacterDTO::new)
                 .collect(Collectors.toList());
-        logger.info(characterDTOS.toString());
+
+        Set<TagDTO> tags = streamer.getTags().stream()
+                .map(tag -> new TagDTO(tag.getName()))
+                .collect(Collectors.toSet());
+
         return StreamerWithCharacterDTO.builder()
                 .streamerName(streamerName)
                 .mainCharacter(streamer.getMainCharacter())
                 .channelId(streamer.getChannelId())
                 .channelImageUrl(streamer.getChannelImageUrl())
                 .characters(characterDTOS)
+                .tags(tags)
                 .build();
 
     }
-    public boolean existStreamer(String streamerName){
-        return streamerRepository.existsByStreamerName(streamerName);
+    public boolean existStreamer(String channelId){
+        return streamerRepository.existsByChannelId(channelId);
     }
 
-    private List<LoaCharacter> createAndCalculateCharaters(String characterName){
+    private List<LoaCharacter> createStreamerCharacterList(String characterName){
         List<LoaCharacter> characterList = lostarkCharacterApiClient.createCharacterList(characterName, apiKey);
         return characterList.stream().collect(Collectors.toList());
     }
+
     @Transactional
     public void updateStreamerCharacters(String streamerName){
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)

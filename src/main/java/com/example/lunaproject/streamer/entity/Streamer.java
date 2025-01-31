@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,6 +37,15 @@ public class Streamer {
 
     @Column(name="channel_image_url")
     private String channelImageUrl;
+
+    @ManyToMany
+    @JoinTable(
+            name = "streamer_tags", // 연결 테이블 이름
+            joinColumns = @JoinColumn(name = "streamer_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     public void addCharacter(LoaCharacter character){
         characters.add(character);
         character.setStreamer(this);
@@ -42,10 +53,10 @@ public class Streamer {
     public void editMainCharacter(String mainCharacter){
         this.mainCharacter = mainCharacter;
     }
-    public void createCharacter(List<LoaCharacter> characterList, String mainCharacter){
+    public void createCharacter(List<LoaCharacter> characterList){
         characterList.stream()
                 .peek(character->character.setStreamer(this))
                 .forEach(characters::add);
-        this.mainCharacter = mainCharacter;
+        this.mainCharacter = characterList.get(0).getCharacterName();
     }
 }
