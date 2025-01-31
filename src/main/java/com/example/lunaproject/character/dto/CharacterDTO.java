@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CharacterDTO {
-    private long id;
+
     @JsonProperty("ServerName")
     private String serverName;
 
@@ -38,7 +38,6 @@ public class CharacterDTO {
     private String characterImage;
 
     public CharacterDTO(final LoaCharacter character){
-        this.id = character.getId();
         this.serverName = character.getServerName();
         this.characterName = character.getCharacterName();
         this.characterClassName = character.getCharacterClassName();
@@ -58,7 +57,6 @@ public class CharacterDTO {
     }
     public static LoaCharacter toEntity(CharacterDTO dto){
         return LoaCharacter.builder()
-                .id((Long) dto.getId())
                 .serverName(dto.getServerName())
                 .characterName(dto.getCharacterName())
                 .characterClassName(dto.getCharacterClassName())
