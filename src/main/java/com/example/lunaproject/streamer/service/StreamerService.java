@@ -35,7 +35,7 @@ public class StreamerService {
     @Value("${Lostark-API-KEY}")
     String apiKey;
 
-    public void createStreamer(StreamerRequestDTO requestDTO) throws JsonProcessingException {
+    public StreamerDTO createStreamer(StreamerRequestDTO requestDTO) throws JsonProcessingException {
         String mainCharacter = requestDTO.getMainCharacter();
         String channelId = requestDTO.getChannelId();
 
@@ -50,8 +50,6 @@ public class StreamerService {
                 .channelImageUrl(content.getChannelImageUrl())
                 .build();
 
-        logger.info("Streamer API information: "+dto.toString());
-
         List<LoaCharacter> characterList = createStreamerCharacterList(mainCharacter);
         Streamer streamer = Streamer.builder()
                 .streamerName(dto.getStreamerName())
@@ -63,6 +61,7 @@ public class StreamerService {
 
         streamer.createCharacter(characterList);
         streamerRepository.save(streamer);
+        return dto;
     }
 
     @Transactional(readOnly = true)
