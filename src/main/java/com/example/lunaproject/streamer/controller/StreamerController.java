@@ -1,9 +1,7 @@
 package com.example.lunaproject.streamer.controller;
 
 import com.example.lunaproject.character.dto.CharacterDTO;
-import com.example.lunaproject.streamer.dto.StreamerDTO;
-import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
-import com.example.lunaproject.streamer.dto.StreamerWithCharacterDTO;
+import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +25,12 @@ public class StreamerController {
         }
     }
     @GetMapping("/{streamerName}/details")
-    public ResponseEntity<StreamerWithCharacterDTO> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
+    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
         try{
             StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName);
             return ResponseEntity.ok().body(dto);
         } catch(IllegalArgumentException e){
-            return (ResponseEntity<StreamerWithCharacterDTO>) ResponseEntity.badRequest();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @PutMapping("/{streamerName}/update-characters")
@@ -41,6 +39,15 @@ public class StreamerController {
             service.updateStreamerCharacters(streamerName);
             return ResponseEntity.ok().body(streamerName+"님의 캐릭터 정보가 갱신되었습니다.");
         } catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PutMapping("/{channelId}/tags")
+    public ResponseEntity<?> updateStreamerTags(@PathVariable(required = true) String channelId, @RequestBody TagRequestDTO tagRequestDTO) throws IOException{
+        try{
+            service.updateStreamerTags(channelId, tagRequestDTO.getTags());
+            return ResponseEntity.ok().body(null);
+        } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

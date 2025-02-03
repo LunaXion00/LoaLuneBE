@@ -7,6 +7,7 @@ import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
+import com.example.lunaproject.streamer.repository.TagRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
@@ -30,6 +31,7 @@ public class StreamerService {
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ChzzkStreamerApiClient chzzkStreamerApiClient;
     private final CharacterService characterService;
+    private final TagRepository tagRepository;
     private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
 
     @Value("${Lostark-API-KEY}")
@@ -84,7 +86,7 @@ public class StreamerService {
                 .collect(Collectors.toList());
 
         Set<TagDTO> tags = streamer.getTags().stream()
-                .map(tag -> new TagDTO(tag.getName()))
+                .map(tag -> new TagDTO(tag.getTagName()))
                 .collect(Collectors.toSet());
 
         return StreamerWithCharacterDTO.builder()
@@ -111,5 +113,10 @@ public class StreamerService {
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
         characterService.updateSibling(streamerName);
+    }
+
+    @Transactional
+    public void updateStreamerTags(String channelId, List<String> tags){
+
     }
 }
