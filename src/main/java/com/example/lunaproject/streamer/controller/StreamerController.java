@@ -46,7 +46,7 @@ public class StreamerController {
     public ResponseEntity<?> updateStreamerTags(@PathVariable(required = true) String channelId, @RequestBody TagRequestDTO tagRequestDTO) throws IOException{
         try{
             service.updateStreamerTags(channelId, tagRequestDTO.getTags());
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body("태그 갱신 완료");
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

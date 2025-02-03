@@ -6,6 +6,7 @@ import com.example.lunaproject.character.service.CharacterService;
 import com.example.lunaproject.lostark.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.Streamer;
+import com.example.lunaproject.streamer.entity.Tag;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.example.lunaproject.streamer.repository.TagRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -117,6 +118,16 @@ public class StreamerService {
 
     @Transactional
     public void updateStreamerTags(String channelId, List<String> tags){
-
+        Streamer streamer = streamerRepository.findByChannelId(channelId).orElseThrow(()-> new IllegalArgumentException("스트리머를 찾을 수 없습니다"));
+        Set<Tag> tagSet = tags.stream()
+                .map(tagName -> tagRepository.findByTagName(tagName)
+                        .orElseGet(() -> {
+                            Tag newTag = new Tag();
+                            newTag.setTagName(tagName);
+                            return tagRepository.save(newTag);
+                        }))
+                .collect(Collectors.toSet());
+        streamer.setTags(tagSet);
+        streamerRepository.save(streamer);
     }
 }

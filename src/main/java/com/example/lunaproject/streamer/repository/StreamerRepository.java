@@ -11,4 +11,5 @@ public interface StreamerRepository extends JpaRepository<Streamer, Long>, Strea
     Boolean existsByStreamerName(String streamerName);
     Boolean existsByChannelId(String channelId);
     Optional<Streamer> findByStreamerName(String streamerName);
+    Optional<Streamer> findByChannelId(String channelId);
 }
