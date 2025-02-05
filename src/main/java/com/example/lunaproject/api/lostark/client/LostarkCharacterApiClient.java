@@ -1,8 +1,8 @@
 package com.example.lunaproject.api.lostark.client;
 
-import com.example.lunaproject.character.dto.CharacterDTO;
-import com.example.lunaproject.character.entity.LoaCharacter;
-import com.example.lunaproject.character.service.CharacterService;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
+import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class LostarkCharacterApiClient {
     private final LostarkApiClient apiClient;
-    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
     public List<LoaCharacter> createCharacterList(String characterName, String apiKey){
         try{
@@ -110,24 +110,24 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public List<CharacterDTO> getSiblings(String characterName, String apiKey){
+    public List<LoaCharacterDTO> getSiblings(String characterName, String apiKey){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
 
         try(InputStreamReader reader = apiClient.lostarkGetApi(link, apiKey)){
             ObjectMapper objectMapper = new ObjectMapper();
-            List<CharacterDTO> characterDTOS = objectMapper.readValue(
+            List<LoaCharacterDTO> loaCharacterDTOS = objectMapper.readValue(
                     reader,
-                    new TypeReference<List<CharacterDTO>>() {}
+                    new TypeReference<List<LoaCharacterDTO>>() {}
             );
-            return characterDTOS.stream()
+            return loaCharacterDTOS.stream()
                     .filter(this::isItemLevelAboveThreshold)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Error in getSiblings: "+e.getMessage());
         }
     }
-    private boolean isItemLevelAboveThreshold(CharacterDTO dto) {
+    private boolean isItemLevelAboveThreshold(LoaCharacterDTO dto) {
         try {
             double itemLevel = dto.getItemLevel();
             return itemLevel >= 1640.00;
@@ -136,14 +136,14 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public CharacterDTO getCharacter(String characterName, String apiKey){
+    public LoaCharacterDTO getCharacter(String characterName, String apiKey){
         try{
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
 
             InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(inputStreamReader, CharacterDTO.class);
+            return objectMapper.readValue(inputStreamReader, LoaCharacterDTO.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

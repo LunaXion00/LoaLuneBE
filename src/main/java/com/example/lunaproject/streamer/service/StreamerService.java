@@ -2,9 +2,9 @@ package com.example.lunaproject.streamer.service;
 
 import com.example.lunaproject.api.chzzk.client.ChzzkStreamerApiClient;
 import com.example.lunaproject.api.chzzk.dto.ChzzkResponseDTO;
-import com.example.lunaproject.character.dto.CharacterDTO;
-import com.example.lunaproject.character.entity.LoaCharacter;
-import com.example.lunaproject.character.service.CharacterService;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
+import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.Streamer;
@@ -32,9 +32,9 @@ public class StreamerService {
     private final StreamerRepository streamerRepository;
     private final LostarkCharacterApiClient lostarkCharacterApiClient;
     private final ChzzkStreamerApiClient chzzkStreamerApiClient;
-    private final CharacterService characterService;
+    private final LoaCharacterService loaCharacterService;
     private final TagRepository tagRepository;
-    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
     @Value("${Lostark-API-KEY}")
     String apiKey;
@@ -83,8 +83,8 @@ public class StreamerService {
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
 
-        List<CharacterDTO> characterDTOS = streamer.getCharacters().stream()
-                .map(CharacterDTO::new)
+        List<LoaCharacterDTO> loaCharacterDTOS = streamer.getCharacters().stream()
+                .map(LoaCharacterDTO::new)
                 .collect(Collectors.toList());
 
         Set<TagDTO> tags = streamer.getTags().stream()
@@ -96,7 +96,7 @@ public class StreamerService {
                 .mainCharacter(streamer.getMainCharacter())
                 .channelId(streamer.getChannelId())
                 .channelImageUrl(streamer.getChannelImageUrl())
-                .characters(characterDTOS)
+                .characters(loaCharacterDTOS)
                 .tags(tags)
                 .build();
 
@@ -114,7 +114,7 @@ public class StreamerService {
     public void updateStreamerCharacters(String streamerName){
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
-        characterService.updateSibling(streamerName);
+        loaCharacterService.updateSibling(streamerName);
     }
 
     @Transactional

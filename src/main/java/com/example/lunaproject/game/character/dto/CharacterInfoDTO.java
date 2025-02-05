@@ -1,4 +1,4 @@
-package com.example.lunaproject.character.dto;
+package com.example.lunaproject.game.character.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

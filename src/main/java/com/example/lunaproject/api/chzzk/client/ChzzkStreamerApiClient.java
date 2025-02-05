@@ -1,6 +1,6 @@
 package com.example.lunaproject.api.chzzk.client;
 
-import com.example.lunaproject.character.service.CharacterService;
+import com.example.lunaproject.game.character.service.LoaCharacterService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 @Service
 public class ChzzkStreamerApiClient {
     private final ChzzkApiClient apiClient;
-    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
     public JSONObject findStreamerByChannelId(String channelId){
         String link = "https://api.chzzk.naver.com/service/v1/channels/" + channelId;

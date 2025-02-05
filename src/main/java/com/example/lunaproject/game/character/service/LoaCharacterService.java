@@ -1,8 +1,8 @@
-package com.example.lunaproject.character.service;
+package com.example.lunaproject.game.character.service;
 
-import com.example.lunaproject.character.dto.CharacterDTO;
-import com.example.lunaproject.character.entity.LoaCharacter;
-import com.example.lunaproject.character.repository.CharactersRepository;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
+import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.repository.LoaCharacterRepository;
 import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
@@ -21,10 +21,10 @@ import static com.example.lunaproject.global.utils.GlobalMethods.isSameUUID;
 
 @Service
 @RequiredArgsConstructor
-public class CharacterService {
-    private static final Logger logger = LoggerFactory.getLogger(CharacterService.class);
+public class LoaCharacterService {
+    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
-    private final CharactersRepository charactersRepository;
+    private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;
     private final LostarkCharacterApiClient apiClient;
     @Value("${Lostark-API-KEY}")
@@ -49,7 +49,7 @@ public class CharacterService {
         }
     }
     @Transactional
-    public LoaCharacter addCharacterToRepository(CharacterDTO dto, Streamer streamer){
+    public LoaCharacter addCharacterToRepository(LoaCharacterDTO dto, Streamer streamer){
         LoaCharacter character = LoaCharacter.builder()
                 .serverName(dto.getServerName())
                 .characterName(dto.getCharacterName())
@@ -59,19 +59,19 @@ public class CharacterService {
                 .streamer(streamer)
                 .characterImage(dto.getCharacterImage())
                 .build();
-        return charactersRepository.save(character);
+        return loaCharacterRepository.save(character);
     }
 
 
     @Transactional(readOnly = true)
     public LoaCharacter get(long id, String characterName){
-        return charactersRepository.findByCharacterName(characterName).orElseThrow(
+        return loaCharacterRepository.findByCharacterName(characterName).orElseThrow(
                 () -> new IllegalArgumentException("characterName = " + characterName + " : 존재하지 않는 캐릭터"));
     }
 
     @Transactional
     public LoaCharacter registerCharacter(String characterName, Streamer streamer){
-        Optional<LoaCharacter> exist = charactersRepository.findByCharacterName(characterName);
+        Optional<LoaCharacter> exist = loaCharacterRepository.findByCharacterName(characterName);
         if(exist.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 캐릭터: "+ characterName);
         }
@@ -84,16 +84,16 @@ public class CharacterService {
 
         String mainCharacter = streamer.getMainCharacter();
 
-        List<CharacterDTO> siblings = apiClient.getSiblings(mainCharacter, apiKey);
+        List<LoaCharacterDTO> siblings = apiClient.getSiblings(mainCharacter, apiKey);
         siblings.stream()
                 .map(dto-> {
-                    CharacterDTO updatedCharacter = apiClient.getCharacter(dto.getCharacterName(), apiKey);
+                    LoaCharacterDTO updatedCharacter = apiClient.getCharacter(dto.getCharacterName(), apiKey);
                     if(updatedCharacter != null && updatedCharacter.getCharacterImage() != null) dto = updatedCharacter;
                     return dto;
                 })
                 .forEach(dto-> updateCharacter(dto, streamer, mainCharacter));
     }
-    private void updateCharacter(CharacterDTO dto, Streamer streamer, String mainCharacter){
+    private void updateCharacter(LoaCharacterDTO dto, Streamer streamer, String mainCharacter){
         List<LoaCharacter> findCharacterListUUID= streamer.getCharacters().stream()
                 .filter(character-> character.getCharacterImage() != null)
                 .filter(character -> isSameUUID(character.getCharacterImage(), dto.getCharacterImage()))

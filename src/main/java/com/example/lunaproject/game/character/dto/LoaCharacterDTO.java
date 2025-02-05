@@ -1,7 +1,7 @@
-package com.example.lunaproject.character.dto;
+package com.example.lunaproject.game.character.dto;
 
 
-import com.example.lunaproject.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.global.utils.DoubleDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CharacterDTO {
+public class LoaCharacterDTO {
 
     @JsonProperty("ServerName")
     private String serverName;
@@ -37,7 +37,7 @@ public class CharacterDTO {
     @JsonProperty("CharacterImage")
     private String characterImage;
 
-    public CharacterDTO(final LoaCharacter character){
+    public LoaCharacterDTO(final LoaCharacter character){
         this.serverName = character.getServerName();
         this.characterName = character.getCharacterName();
         this.characterClassName = character.getCharacterClassName();
@@ -55,7 +55,7 @@ public class CharacterDTO {
                 ", itemLevel='" + itemLevel + '\'' +
                 '}';
     }
-    public static LoaCharacter toEntity(CharacterDTO dto){
+    public static LoaCharacter toEntity(LoaCharacterDTO dto){
         return LoaCharacter.builder()
                 .serverName(dto.getServerName())
                 .characterName(dto.getCharacterName())

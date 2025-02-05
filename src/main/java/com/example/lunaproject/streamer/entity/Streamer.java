@@ -1,6 +1,6 @@
 package com.example.lunaproject.streamer.entity;
 
-import com.example.lunaproject.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;

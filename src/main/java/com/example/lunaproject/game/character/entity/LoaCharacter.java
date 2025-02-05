@@ -1,6 +1,6 @@
-package com.example.lunaproject.character.entity;
+package com.example.lunaproject.game.character.entity;
 
-import com.example.lunaproject.character.dto.CharacterDTO;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -42,7 +42,7 @@ public class LoaCharacter{
     @Column(name = "character_image")
     private String characterImage;
 
-    public void updateLoaCharacter(CharacterDTO dto){
+    public void updateLoaCharacter(LoaCharacterDTO dto){
         this.characterName = dto.getCharacterName();
         this.characterLevel = dto.getCharacterLevel();
         this.itemLevel = dto.getItemLevel();

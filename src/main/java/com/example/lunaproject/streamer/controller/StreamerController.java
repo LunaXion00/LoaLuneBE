@@ -1,6 +1,5 @@
 package com.example.lunaproject.streamer.controller;
 
-import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
