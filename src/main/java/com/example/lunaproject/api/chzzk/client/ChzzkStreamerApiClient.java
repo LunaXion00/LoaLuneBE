@@ -1,4 +1,4 @@
-package com.example.lunaproject.streamer.service;
+package com.example.lunaproject.api.chzzk.client;
 
 import com.example.lunaproject.character.service.CharacterService;
 import lombok.RequiredArgsConstructor;

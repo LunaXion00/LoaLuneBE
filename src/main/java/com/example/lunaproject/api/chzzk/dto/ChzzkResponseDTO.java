@@ -1,4 +1,4 @@
-package com.example.lunaproject.streamer.dto;
+package com.example.lunaproject.api.chzzk.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

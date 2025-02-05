@@ -1,4 +1,4 @@
-package com.example.lunaproject.lostark;
+package com.example.lunaproject.api.lostark.client;
 
 import org.springframework.stereotype.Service;
 

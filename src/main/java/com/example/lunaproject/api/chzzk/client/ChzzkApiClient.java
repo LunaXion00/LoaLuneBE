@@ -1,4 +1,4 @@
-package com.example.lunaproject.streamer.service;
+package com.example.lunaproject.api.chzzk.client;
 
 import org.springframework.stereotype.Service;
 

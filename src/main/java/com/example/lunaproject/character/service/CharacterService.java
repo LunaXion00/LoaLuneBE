@@ -3,7 +3,7 @@ package com.example.lunaproject.character.service;
 import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.repository.CharactersRepository;
-import com.example.lunaproject.lostark.LostarkCharacterApiClient;
+import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import lombok.RequiredArgsConstructor;

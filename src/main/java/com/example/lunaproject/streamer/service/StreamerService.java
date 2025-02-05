@@ -1,9 +1,11 @@
 package com.example.lunaproject.streamer.service;
 
+import com.example.lunaproject.api.chzzk.client.ChzzkStreamerApiClient;
+import com.example.lunaproject.api.chzzk.dto.ChzzkResponseDTO;
 import com.example.lunaproject.character.dto.CharacterDTO;
 import com.example.lunaproject.character.entity.LoaCharacter;
 import com.example.lunaproject.character.service.CharacterService;
-import com.example.lunaproject.lostark.LostarkCharacterApiClient;
+import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.entity.Tag;
@@ -11,7 +13,6 @@ import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.example.lunaproject.streamer.repository.TagRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
