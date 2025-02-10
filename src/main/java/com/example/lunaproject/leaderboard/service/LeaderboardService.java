@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LeaderboardService {
     private final LeaderboardRepository leaderboardRepository;
-    private final ObjectMapper objectMapper;
     public List<LeaderboardResponseDTO> getLeaderboard(GameType gameType){
         List<Leaderboard> leaderboardList = leaderboardRepository.findByGameTypeOrderByRankAsc(gameType);
 
@@ -29,12 +28,5 @@ public class LeaderboardService {
                     .itemLevel(entry.getItemLevel())
                     .build();
         }).collect(Collectors.toList());
-    }
-    private Map<String, Object> parseRankingDetails(String rankingDetailsJson) {
-        try {
-            return objectMapper.readValue(rankingDetailsJson, new TypeReference<>() {});
-        } catch (Exception e) {
-            throw new RuntimeException("랭킹 상세 정보 JSON 변환 오류", e);
-        }
     }
 }

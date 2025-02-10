@@ -4,11 +4,14 @@ import com.example.lunaproject.game.character.repository.LoaCharacterRepository;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.entity.Leaderboard;
 import com.example.lunaproject.leaderboard.repository.LeaderboardRepository;
+import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
+import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,11 +19,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class UpdateLeaderboardService {
     private final LeaderboardRepository leaderboardRepository;
     private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;
-    @Scheduled(cron = "00 18 * * * *")
+    private final StreamerService streamerService;
+    @Scheduled(cron = "40 9 * * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -34,9 +39,14 @@ public class UpdateLeaderboardService {
     }
     public void updateLeaderboard(GameType gameType) {
         leaderboardRepository.deleteByGameType(gameType);
+        log.info("리더보드 초기화.");
 
+        List<Streamer> streamers = streamerRepository.findAll();
+        for(Streamer streamer:streamers) streamerService.updateStreamerCharacters(streamer.getStreamerName());
+        log.info("캐릭터 업데이트 완료.");
         List<Leaderboard> newRankings = createNewLeaderboard(gameType);
         leaderboardRepository.saveAll(newRankings);
+        log.info("리더보드 저장 완료");
         newRankings = leaderboardRepository.findAll();
         assignRanking(newRankings);
 
