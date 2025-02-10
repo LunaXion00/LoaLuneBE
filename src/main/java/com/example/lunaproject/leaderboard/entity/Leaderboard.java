@@ -1,7 +1,7 @@
 package com.example.lunaproject.leaderboard.entity;
 
-import com.example.lunaproject.game.enums.GameType;
 import com.example.lunaproject.streamer.entity.Streamer;
+import com.example.lunaproject.global.utils.GameType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +27,6 @@ public class Leaderboard {
     @JoinColumn(name = "streamer_id")
     private Streamer streamer;
 
-    @Column(columnDefinition = "TEXT")
-    private String rankingDetails;
+    private Double itemLevel;
+
 }

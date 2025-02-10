@@ -29,25 +29,6 @@ public class LoaCharacterService {
     private final LostarkCharacterApiClient apiClient;
     @Value("${Lostark-API-KEY}")
     String apiKey;
-
-    public JSONArray Characters(String characterName){
-        try{
-            JSONArray array = apiClient.findCharactersByApi(characterName, apiKey);
-            logger.info("----"+array.toString());
-            return array;
-        } catch(Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-    public JSONObject characterDetails(String characterName){
-        try {
-            JSONObject object = apiClient.findCharacterDetailsByApi(characterName, apiKey);
-            logger.info("===="+object.toString());
-            return object;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
     @Transactional
     public LoaCharacter addCharacterToRepository(LoaCharacterDTO dto, Streamer streamer){
         LoaCharacter character = LoaCharacter.builder()
@@ -61,24 +42,6 @@ public class LoaCharacterService {
                 .build();
         return loaCharacterRepository.save(character);
     }
-
-
-    @Transactional(readOnly = true)
-    public LoaCharacter get(long id, String characterName){
-        return loaCharacterRepository.findByCharacterName(characterName).orElseThrow(
-                () -> new IllegalArgumentException("characterName = " + characterName + " : 존재하지 않는 캐릭터"));
-    }
-
-    @Transactional
-    public LoaCharacter registerCharacter(String characterName, Streamer streamer){
-        Optional<LoaCharacter> exist = loaCharacterRepository.findByCharacterName(characterName);
-        if(exist.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 캐릭터: "+ characterName);
-        }
-//        LoaCharacter characterInfo = apiClient.findCharacterDetailsByApi(characterName, apiKey);
-        return null;
-    }
-
     public void updateSibling(String streamerName){
         Streamer streamer = streamerRepository.get(streamerName);
 

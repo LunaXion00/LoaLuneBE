@@ -68,17 +68,6 @@ public class StreamerService {
         return dto;
     }
 
-    @Transactional(readOnly = true)
-    public Streamer get(String streamerName){
-        return streamerRepository.get(streamerName);
-    }
-
-    @Transactional
-    public void editMainCharacter(String streamerName, String mainCharacter){
-        Streamer streamer = get(streamerName);
-
-    }
-
     public StreamerWithCharacterDTO getStreamerInfo(String streamerName){
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));

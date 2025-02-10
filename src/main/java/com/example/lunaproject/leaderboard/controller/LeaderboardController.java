@@ -1,6 +1,6 @@
 package com.example.lunaproject.leaderboard.controller;
 
-import com.example.lunaproject.game.enums.GameType;
+import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.dto.LeaderboardResponseDTO;
 import com.example.lunaproject.leaderboard.service.LeaderboardService;
 import lombok.RequiredArgsConstructor;

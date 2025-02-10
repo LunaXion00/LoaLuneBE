@@ -1,7 +1,7 @@
 package com.example.lunaproject.leaderboard.service;
 
-import com.example.lunaproject.game.enums.GameType;
 import com.example.lunaproject.leaderboard.dto.LeaderboardResponseDTO;
+import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.entity.Leaderboard;
 import com.example.lunaproject.leaderboard.repository.LeaderboardRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,16 +19,14 @@ public class LeaderboardService {
     private final LeaderboardRepository leaderboardRepository;
     private final ObjectMapper objectMapper;
     public List<LeaderboardResponseDTO> getLeaderboard(GameType gameType){
-        List<Leaderboard> leaderboardList = leaderboardRepository.findByGameTypeOrderByRankAsc(gameType.name());
+        List<Leaderboard> leaderboardList = leaderboardRepository.findByGameTypeOrderByRankAsc(gameType);
 
         return leaderboardList.stream().map(entry -> {
-            Map<String, Object> rankingDetails = parseRankingDetails(entry.getRankingDetails());
-
             return LeaderboardResponseDTO.builder()
                     .streamerName(entry.getStreamerName())
                     .rank(entry.getRank())
                     .rankChange(entry.getRankChange())
-                    .rankingDetails(rankingDetails)
+                    .itemLevel(entry.getItemLevel())
                     .build();
         }).collect(Collectors.toList());
     }

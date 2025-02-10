@@ -13,5 +13,5 @@ public class LeaderboardResponseDTO {
     private String streamerName;
     private int rank;
     private int rankChange;
-    private Map<String, Object> rankingDetails;
+    private Double itemLevel;
 }
