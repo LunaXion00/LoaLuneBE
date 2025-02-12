@@ -25,7 +25,7 @@ public class UpdateLeaderboardService {
     private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
-    @Scheduled(cron = "40 9 * * * *")
+    @Scheduled(cron = "00 00 13 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){

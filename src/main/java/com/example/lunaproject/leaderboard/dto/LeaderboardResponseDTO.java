@@ -14,4 +14,5 @@ public class LeaderboardResponseDTO {
     private int rank;
     private int rankChange;
     private Double itemLevel;
+    private String streamerImageUrl;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{gameType}/leaderboard")
+@RequestMapping("/api/{gameType}/leaderboard")
 @RequiredArgsConstructor
 public class LeaderboardController {
     private final LeaderboardService leaderboardService;

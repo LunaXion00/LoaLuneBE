@@ -13,29 +13,27 @@ import java.net.URL;
 @Service
 public class LostarkApiClient {
     public InputStreamReader lostarkGetApi(String link, String key){
-        int maxRetries = 10;
-        int retryCount = 0;
-        while(retryCount<maxRetries){
+        while(true){
             try{
                 ApiRateLimiter.checkAndWait();
                 HttpURLConnection httpURLConnection = getHttpURLConntection(link, "GET", key);
                 return getInputStreamReader(httpURLConnection);
             } catch (IllegalArgumentException e) {
                 if(e.getMessage().contains("사용한도")){
-                    retryCount++;
                     try{
                         Thread.sleep(60_000);
                         ApiRateLimiter.resetCounter();
                     }catch(InterruptedException ie){
                         Thread.currentThread().interrupt();
+                        throw new RuntimeException("쓰레드 인터럽트 발생", ie);
                     }
+                } else{
+                    throw e;
                 }
-                else{throw e;}
             } catch (Exception e) {
                 throw new RuntimeException("API 호출 중 오류 발생: " + e.getMessage());
             }
         }
-        throw new RuntimeException("최대 재시도 횟수 초과");
     }
     public HttpURLConnection getHttpURLConntection(String link, String method, String key){
         try{
