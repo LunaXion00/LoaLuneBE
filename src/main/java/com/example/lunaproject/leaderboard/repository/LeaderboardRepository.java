@@ -9,4 +9,5 @@ import java.util.List;
 public interface LeaderboardRepository extends JpaRepository<Leaderboard, Long> {
     List<Leaderboard> findByGameTypeOrderByRankAsc(GameType gameType);
     void deleteByGameType(GameType gameType);
+    List<Leaderboard> findByGameType(GameType gameType);
 }

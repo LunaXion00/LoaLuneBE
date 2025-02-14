@@ -38,6 +38,8 @@ public class UpdateLeaderboardService {
         }
     }
     public void updateLeaderboard(GameType gameType) {
+        List<Leaderboard> oldRanking = leaderboardRepository.findByGameType(gameType);
+
         leaderboardRepository.deleteByGameType(gameType);
         List<Streamer> streamers = streamerRepository.findAll();
         for(Streamer streamer:streamers) streamerService.updateStreamerCharacters(streamer.getStreamerName());
