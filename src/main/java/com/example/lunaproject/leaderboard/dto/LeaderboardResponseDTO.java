@@ -10,9 +10,15 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class LeaderboardResponseDTO {
+    // 스트리머 관련 정보
     private String streamerName;
+    private String channelId;
+    private String streamerImageUrl;
+    // 랭킹 정보
     private int rank;
     private int rankChange;
-    private Double itemLevel;
-    private String streamerImageUrl;
+    //캐릭터 정보
+    private String characterName;
+    private String characterClassName;
+    private String rankingDetails;
 }

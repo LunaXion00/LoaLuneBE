@@ -1,5 +1,7 @@
 package com.example.lunaproject.leaderboard.entity;
 
+import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.repository.LoaCharacterRepository;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.global.utils.GameType;
 import jakarta.persistence.*;
@@ -19,14 +21,17 @@ public class Leaderboard {
     @Enumerated(EnumType.STRING)
     @Column(name = "game_type", nullable = false)
     private GameType gameType;
-    private String streamerName;
     private int rankChange;
     private int rank;
 
     @ManyToOne
-    @JoinColumn(name = "streamer_id")
+    @JoinColumn(name = "streamer_id", nullable = false)
     private Streamer streamer;
 
-    private Double itemLevel;
+    @Column(columnDefinition = "TEXT")
+    private String rankingDetails; // JSON 데이터 (랭킹 기준별 추가 정보)
 
+    @ManyToOne
+    @JoinColumn(name = "character_id", nullable = false)
+    private LoaCharacter character;
 }

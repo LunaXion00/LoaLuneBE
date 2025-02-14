@@ -25,7 +25,7 @@ public class UpdateLeaderboardService {
     private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
-    @Scheduled(cron = "00 00 13 * * *")
+    @Scheduled(cron = "00 5 16 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -39,30 +39,24 @@ public class UpdateLeaderboardService {
     }
     public void updateLeaderboard(GameType gameType) {
         leaderboardRepository.deleteByGameType(gameType);
-        log.info("리더보드 초기화.");
-
         List<Streamer> streamers = streamerRepository.findAll();
         for(Streamer streamer:streamers) streamerService.updateStreamerCharacters(streamer.getStreamerName());
-        log.info("캐릭터 업데이트 완료.");
         List<Leaderboard> newRankings = createNewLeaderboard(gameType);
         leaderboardRepository.saveAll(newRankings);
-        log.info("리더보드 저장 완료");
         newRankings = leaderboardRepository.findAll();
         assignRanking(newRankings);
-
         leaderboardRepository.saveAll(newRankings);
-
     }
     private List<Leaderboard> createNewLeaderboard(GameType gameType){
         return streamerRepository.findAll().stream()
                 .map(streamer -> loaCharacterRepository.findTopByStreamerOrderByItemLevelDesc(streamer)
                         .map(character -> Leaderboard.builder()
                                 .gameType(gameType)
-                                .streamerName(streamer.getStreamerName())
                                 .rank(0) // 나중에 정렬 후 순위 지정
                                 .rankChange(0)
-                                .itemLevel(character.getItemLevel())
+                                .rankingDetails("{\"itemLevel\": " + character.getItemLevel() + "}")
                                 .streamer(streamer)
+                                .character(character)
                                 .build())
                         .orElse(null))
                 .filter(leaderboard -> leaderboard != null)
@@ -70,8 +64,9 @@ public class UpdateLeaderboardService {
     }
     private void assignRanking(List<Leaderboard> leaderboards) {
         leaderboards.sort((a, b) -> Double.compare(
-                b.getItemLevel(),
-                a.getItemLevel()
+                Double.parseDouble(b.getRankingDetails().replace("{\"itemLevel\": ", "").replace("}", "")),
+                Double.parseDouble(a.getRankingDetails().replace("{\"itemLevel\": ", "").replace("}", ""))
+
         ));
 
         int rank = 1;

@@ -35,7 +35,7 @@ public class Streamer {
     @JsonManagedReference
     private List<LoaCharacter> characters;
 
-    @Column(name="channel_image_url")
+    @Column(name="channel_image_url", length=511)
     private String channelImageUrl;
 
     @ManyToMany

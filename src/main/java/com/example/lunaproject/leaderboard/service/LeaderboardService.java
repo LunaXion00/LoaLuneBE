@@ -22,11 +22,14 @@ public class LeaderboardService {
 
         return leaderboardList.stream().map(entry -> {
             return LeaderboardResponseDTO.builder()
-                    .streamerName(entry.getStreamerName())
+                    .streamerName(entry.getStreamer().getStreamerName())
+                    .channelId(entry.getStreamer().getChannelId())
                     .streamerImageUrl(entry.getStreamer().getChannelImageUrl())
                     .rank(entry.getRank())
                     .rankChange(entry.getRankChange())
-                    .itemLevel(entry.getItemLevel())
+                    .characterName(entry.getCharacter().getCharacterName())
+                    .characterClassName(entry.getCharacter().getCharacterClassName())
+                    .rankingDetails(entry.getRankingDetails())
                     .build();
         }).collect(Collectors.toList());
     }

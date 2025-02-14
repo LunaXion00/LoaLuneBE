@@ -2,7 +2,14 @@ package com.example.lunaproject.streamer.entity;
 
 import com.example.lunaproject.global.utils.GameType;
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "streamer_game")
+@Builder
 @Entity
 public class StreamerGame {
     @Id
