@@ -21,4 +21,7 @@ public class LeaderboardResponseDTO {
     private String characterName;
     private String characterClassName;
     private String rankingDetails;
+
+    private double itemLevelChange;
+    private boolean isNewStreamer;
 }

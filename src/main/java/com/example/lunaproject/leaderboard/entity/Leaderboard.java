@@ -29,9 +29,13 @@ public class Leaderboard {
     private Streamer streamer;
 
     @Column(columnDefinition = "TEXT")
-    private String rankingDetails; // JSON 데이터 (랭킹 기준별 추가 정보)
+    private String rankingDetails;
+
+    @Column(columnDefinition = "TEXT")
+    private String previousRankingDetails;
 
     @ManyToOne
     @JoinColumn(name = "character_id", nullable = false)
     private LoaCharacter character;
+
 }

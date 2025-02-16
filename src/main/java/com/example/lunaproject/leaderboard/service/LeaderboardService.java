@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import static com.example.lunaproject.global.utils.GlobalMethods.extractItemLevel;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,6 +30,8 @@ public class LeaderboardService {
                     .characterName(entry.getCharacter().getCharacterName())
                     .characterClassName(entry.getCharacter().getCharacterClassName())
                     .rankingDetails(entry.getRankingDetails())
+                    .itemLevelChange(extractItemLevel(entry.getRankingDetails())-extractItemLevel(entry.getPreviousRankingDetails()))
+                    .isNewStreamer(entry.getPreviousRankingDetails()==null)
                     .build();
         }).collect(Collectors.toList());
     }
