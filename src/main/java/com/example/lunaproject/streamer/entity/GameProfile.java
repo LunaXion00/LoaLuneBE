@@ -3,6 +3,7 @@ package com.example.lunaproject.streamer.entity;
 import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.global.utils.GameType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,7 +34,7 @@ public class GameProfile {
     private Long mainCharacterId;
 
     @OneToMany(mappedBy="gameProfile", cascade = CascadeType.ALL)
-    private List<GameCharacter> characters;
+    private List<GameCharacter> characters = new ArrayList<>();
 
     public void addCharacter(GameCharacter character){
         character.setGameProfile(this);

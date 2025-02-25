@@ -3,6 +3,7 @@ package com.example.lunaproject.game.character.entity;
 import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.streamer.entity.GameProfile;
 import com.example.lunaproject.streamer.entity.Streamer;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,13 +24,9 @@ public abstract class GameCharacter<T extends GameCharacterDTO> {
 
     private String characterName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "game_type", nullable = false, insertable = false, updatable = false)
-    private GameType gameType;
-
-    @ManyToOne
-    @JoinColumn(name ="streamer_id")
-    private Streamer streamer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_profile_id")
+    private GameProfile gameProfile;
 
     public abstract void updateCharacter(T dto);
 }

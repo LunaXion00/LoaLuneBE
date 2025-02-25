@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,15 +27,12 @@ public class Streamer {
     @Column(name="streamer_name")
     private String streamerName;
 
-    @Column(name="main_character")
-    private String mainCharacter;
-
     @Column(name="channel_id")
     private String channelId;
 
-    @OneToMany(mappedBy = "streamer", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    private List<GameCharacter> characters;
+    @OneToMany(mappedBy = "streamer", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<GameProfile> gameProfiles = new ArrayList<>();
 
     @Column(name="channel_image_url", length=511)
     private String channelImageUrl;
@@ -47,17 +45,5 @@ public class Streamer {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    public void addCharacter(LoaCharacter character){
-        characters.add(character);
-        character.setStreamer(this);
-    }
-    public void editMainCharacter(String mainCharacter){
-        this.mainCharacter = mainCharacter;
-    }
-    public void createCharacter(List<GameCharacter> characterList){
-        characterList.stream()
-                .peek(character->character.setStreamer(this))
-                .forEach(characters::add);
-        this.mainCharacter = characterList.get(0).getCharacterName();
-    }
+
 }

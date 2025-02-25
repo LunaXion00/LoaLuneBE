@@ -52,19 +52,20 @@ public class UpdateLeaderboardService {
         leaderboardRepository.saveAll(newRankings);
     }
     private List<Leaderboard> createNewLeaderboard(GameType gameType){
-        return streamerRepository.findAll().stream()
-                .map(streamer -> loaCharacterRepository.findTopByStreamerOrderByItemLevelDesc(streamer)
-                        .map(character -> Leaderboard.builder()
-                                .gameType(gameType)
-                                .rank(0) // 나중에 정렬 후 순위 지정
-                                .rankChange(0)
-                                .rankingDetails("{\"itemLevel\": " + character.getItemLevel() + "}")
-                                .streamer(streamer)
-                                .character(character)
-                                .build())
-                        .orElse(null))
-                .filter(leaderboard -> leaderboard != null)
-                .toList();
+//        return streamerRepository.findAll().stream()
+//                .map(streamer -> loaCharacterRepository.findTopByStreamerOrderByItemLevelDesc(streamer)
+//                        .map(character -> Leaderboard.builder()
+//                                .gameType(gameType)
+//                                .rank(0) // 나중에 정렬 후 순위 지정
+//                                .rankChange(0)
+//                                .rankingDetails("{\"itemLevel\": " + character.getItemLevel() + "}")
+//                                .streamer(streamer)
+//                                .character(character)
+//                                .build())
+//                        .orElse(null))
+//                .filter(leaderboard -> leaderboard != null)
+//                .toList();
+        return null;
     }
     private void assignRanking(List<Leaderboard> leaderboards, List<Leaderboard> oldRanking) {
         leaderboards.sort((a, b) -> Double.compare(

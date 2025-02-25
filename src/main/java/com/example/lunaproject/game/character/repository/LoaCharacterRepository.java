@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface LoaCharacterRepository extends JpaRepository<LoaCharacter, String> {
     @Query("select t from LoaCharacter t Where t.characterName= :Charactername")
     Optional<LoaCharacter> findByCharacterName(String charactername);
-    Optional<LoaCharacter> findTopByStreamerOrderByItemLevelDesc(Streamer streamer);
+//    Optional<LoaCharacter> findTopByStreamerOrderByItemLevelDesc(Streamer streamer);
 }

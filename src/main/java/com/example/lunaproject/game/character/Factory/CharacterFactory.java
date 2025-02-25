@@ -6,6 +6,6 @@ import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.entity.Streamer;
 
 public interface CharacterFactory<T extends GameCharacter, D extends GameCharacterDTO> {
-    T createCharacter(D dto, Streamer streamer);
+    T createCharacter(D dto);
     GameType getGameType();
 }

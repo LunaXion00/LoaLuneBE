@@ -16,7 +16,4 @@ public class StreamerResponseDTO {
     private long id;
     @JsonProperty("channelName")
     private String streamerName;
-
-    @JsonProperty("channelImageUrl")
-    private String channelImageUrl;
 }

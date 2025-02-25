@@ -24,7 +24,7 @@ public class StreamerController {
         }
     }
     @GetMapping("/{streamerName}/{gameType}")
-    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, GameType gameType) throws IOException{
+    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, @PathVariable GameType gameType) throws IOException{
         try{
             StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName, gameType);
             return ResponseEntity.ok().body(dto);
