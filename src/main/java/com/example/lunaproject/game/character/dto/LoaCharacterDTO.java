@@ -10,19 +10,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoaCharacterDTO {
+public class LoaCharacterDTO extends GameCharacterDTO{
 
     @JsonProperty("ServerName")
     private String serverName;
-
-    @JsonProperty("CharacterName")
-    private String characterName;
 
     @JsonProperty("CharacterClassName")
     private String characterClassName;
@@ -38,8 +36,8 @@ public class LoaCharacterDTO {
     private String characterImage;
 
     public LoaCharacterDTO(final LoaCharacter character){
+        setCharacterName(character.getCharacterName());
         this.serverName = character.getServerName();
-        this.characterName = character.getCharacterName();
         this.characterClassName = character.getCharacterClassName();
         this.itemLevel = character.getItemLevel();
         this.characterLevel = character.getCharacterLevel();
@@ -49,7 +47,7 @@ public class LoaCharacterDTO {
     public String toString() {
         return "CharacterInfoDTO{" +
                 "serverName='" + serverName + '\'' +
-                ", characterName='" + characterName + '\'' +
+                ", characterName='" + getCharacterName() + '\'' +
                 ", characterLevel='" + characterLevel + '\'' +
                 ", characterClassName='" + characterClassName + '\'' +
                 ", itemLevel='" + itemLevel + '\'' +

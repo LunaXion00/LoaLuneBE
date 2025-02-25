@@ -1,5 +1,6 @@
 package com.example.lunaproject.api.lostark.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -10,13 +11,16 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+
 @Service
 public class LostarkApiClient {
-    public InputStreamReader lostarkGetApi(String link, String key){
+    @Value("${Lostark-API-KEY}")
+    String apiKey;
+    public InputStreamReader lostarkGetApi(String link){
         while(true){
             try{
                 ApiRateLimiter.checkAndWait();
-                HttpURLConnection httpURLConnection = getHttpURLConntection(link, "GET", key);
+                HttpURLConnection httpURLConnection = getHttpURLConntection(link, "GET");
                 return getInputStreamReader(httpURLConnection);
             } catch (IllegalArgumentException e) {
                 if(e.getMessage().contains("사용한도")){
@@ -35,12 +39,12 @@ public class LostarkApiClient {
             }
         }
     }
-    public HttpURLConnection getHttpURLConntection(String link, String method, String key){
+    public HttpURLConnection getHttpURLConntection(String link, String method){
         try{
             URL url = new URL(link);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod(method);
-            httpURLConnection.setRequestProperty("authorization", "Bearer "+key);
+            httpURLConnection.setRequestProperty("authorization", "Bearer "+apiKey);
             httpURLConnection.setRequestProperty("accept", "application/json");
             httpURLConnection.setRequestProperty("content-Type", "application/json");
             httpURLConnection.setDoOutput(true);

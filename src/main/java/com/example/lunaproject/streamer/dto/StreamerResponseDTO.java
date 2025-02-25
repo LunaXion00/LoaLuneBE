@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StreamerDTO {
+public class StreamerResponseDTO {
     private long id;
     @JsonProperty("channelName")
     private String streamerName;

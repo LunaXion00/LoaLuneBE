@@ -1,5 +1,6 @@
 package com.example.lunaproject.streamer.controller;
 
+import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,16 @@ public class StreamerController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadStreamerInfo(@RequestBody StreamerRequestDTO requestDTO) throws IOException {
         try{
-            StreamerDTO dto = service.createStreamer(requestDTO);
+            StreamerResponseDTO dto = service.createStreamer(requestDTO);
             return ResponseEntity.ok("스트리머 "+dto.getStreamerName()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
         } catch(IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/{streamerName}/details")
-    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName) throws IOException{
+    @GetMapping("/{streamerName}/{gameType}")
+    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, GameType gameType) throws IOException{
         try{
-            StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName);
+            StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName, gameType);
             return ResponseEntity.ok().body(dto);
         } catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,29 +1,21 @@
 package com.example.lunaproject.game.character.entity;
 
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
-import com.example.lunaproject.streamer.entity.Streamer;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Table(name= "loa_character")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@DiscriminatorValue("lostark")
 @Entity
-public class LoaCharacter{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "character_id")
-    private Long id;
-
+public class LoaCharacter extends GameCharacter<LoaCharacterDTO> {
     @Column(name = "server")
     private String serverName;
-
-    @Column(name = "character_name")
-    private String characterName;
 
     @Column(name = "character_level")
     private int characterLevel;
@@ -34,16 +26,12 @@ public class LoaCharacter{
     @Column(name = "item_level")
     private Double itemLevel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "streamer_id")
-    @JsonBackReference
-    private Streamer streamer;
-
     @Column(name = "character_image")
     private String characterImage;
 
-    public void updateLoaCharacter(LoaCharacterDTO dto){
-        this.characterName = dto.getCharacterName();
+    @Override
+    public void updateCharacter(LoaCharacterDTO dto){
+        setCharacterName(dto.getCharacterName());
         this.characterLevel = dto.getCharacterLevel();
         this.itemLevel = dto.getItemLevel();
         this.characterImage = dto.getCharacterImage();

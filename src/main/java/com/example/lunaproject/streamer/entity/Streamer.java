@@ -1,5 +1,6 @@
 package com.example.lunaproject.streamer.entity;
 
+import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -33,7 +34,7 @@ public class Streamer {
 
     @OneToMany(mappedBy = "streamer", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<LoaCharacter> characters;
+    private List<GameCharacter> characters;
 
     @Column(name="channel_image_url", length=511)
     private String channelImageUrl;
@@ -53,7 +54,7 @@ public class Streamer {
     public void editMainCharacter(String mainCharacter){
         this.mainCharacter = mainCharacter;
     }
-    public void createCharacter(List<LoaCharacter> characterList){
+    public void createCharacter(List<GameCharacter> characterList){
         characterList.stream()
                 .peek(character->character.setStreamer(this))
                 .forEach(characters::add);

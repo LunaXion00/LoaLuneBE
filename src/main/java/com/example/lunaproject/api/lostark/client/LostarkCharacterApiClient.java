@@ -1,8 +1,11 @@
 package com.example.lunaproject.api.lostark.client;
 
+import com.example.lunaproject.api.client.GameApiClient;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
+import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.game.character.service.LoaCharacterService;
+import com.example.lunaproject.global.utils.GameType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -29,47 +32,51 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class LostarkCharacterApiClient {
+public class LostarkCharacterApiClient implements GameApiClient<LoaCharacterDTO> {
     private final LostarkApiClient apiClient;
     private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
-    public List<LoaCharacter> createCharacterList(String characterName, String apiKey){
+    public List<LoaCharacterDTO> createCharacterList(String characterName){
         try{
-            JSONArray jsonArray = findCharactersByApi(characterName, apiKey);
-            List<LoaCharacter> characterList = new ArrayList<>();
+            JSONArray jsonArray = findCharactersByApi(characterName);
+            List<LoaCharacterDTO> dtos = new ArrayList<>();
             for(Object o: jsonArray){
                 JSONObject jsonObject = (JSONObject) o;
-                JSONObject details = findCharacterDetailsByApi(jsonObject.get("CharacterName").toString(), apiKey);
+                JSONObject details = findCharacterDetailsByApi(jsonObject.get("CharacterName").toString());
                 if (details == null) {
                     logger.warn("Skipping character: " + characterName + " due to missing data.");
                     continue; // 다음 캐릭터로 건너뜀
                 }
-                LoaCharacter character = LoaCharacter.builder()
-                        .characterName(details.get("CharacterName").toString())
-                        .serverName(getStringOrNull(details.get("ServerName")))
-                        .characterClassName(getStringOrNull(details.get("CharacterClassName")))
-                        .characterLevel(Integer.parseInt(details.get("CharacterLevel").toString()))
-                        .itemLevel(Double.parseDouble(details.get("ItemMaxLevel").toString().replace(",", "")))
-                        .characterImage(getStringOrNull(details.get("CharacterImage")))
-                        .build();
-                characterList.add(character);
+                dtos.add(LoaCharacterDTO.builder()
+                                .characterName(details.get("CharacterName").toString())
+                                .serverName(getStringOrNull(details.get("ServerName")))
+                                .characterClassName(getStringOrNull(details.get("CharacterClassName")))
+                                .characterLevel(Integer.parseInt(details.get("CharacterLevel").toString()))
+                                .itemLevel(Double.parseDouble(details.get("ItemMaxLevel").toString().replace(",", "")))
+                                .characterImage(getStringOrNull(details.get("CharacterImage")))
+                        .build());
             }
-            List<LoaCharacter> sortedList = characterList.stream()
-                    .sorted(Comparator.comparing(LoaCharacter::getItemLevel).reversed()).collect(Collectors.toList());
-            return sortedList;
+            List<LoaCharacterDTO> sortedDtos = dtos.stream()
+                    .sorted(Comparator.comparing(LoaCharacterDTO::getItemLevel).reversed()).collect(Collectors.toList());
+            return sortedDtos;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public GameType getGameType() {
+        return GameType.lostark;
     }
 
     public String getStringOrNull(Object value){
         return value != null ? value.toString() : null;
     }
 
-    public JSONArray findCharactersByApi(String characterName, String apiKey){
+    public JSONArray findCharactersByApi(String characterName){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
-        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link);
         JSONParser parser = new JSONParser();
         try{
             JSONArray array = (JSONArray) parser.parse(inputStreamReader);
@@ -90,10 +97,10 @@ public class LostarkCharacterApiClient {
         }
         return filtered;
     }
-    public JSONObject findCharacterDetailsByApi(String characterName, String apiKey){
+    public JSONObject findCharacterDetailsByApi(String characterName){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedCharacterName + "/profiles";
-        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+        InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link);
         JSONParser parser = new JSONParser();
         try{
             JSONObject object = (JSONObject) parser.parse(inputStreamReader);
@@ -110,11 +117,11 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public List<LoaCharacterDTO> getSiblings(String characterName, String apiKey){
+    public List<LoaCharacterDTO> getSiblings(String characterName){
         String encodedCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
         String link = "https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
 
-        try(InputStreamReader reader = apiClient.lostarkGetApi(link, apiKey)){
+        try(InputStreamReader reader = apiClient.lostarkGetApi(link)){
             ObjectMapper objectMapper = new ObjectMapper();
             List<LoaCharacterDTO> loaCharacterDTOS = objectMapper.readValue(
                     reader,
@@ -136,12 +143,12 @@ public class LostarkCharacterApiClient {
         }
     }
 
-    public LoaCharacterDTO getCharacter(String characterName, String apiKey){
+    public LoaCharacterDTO getCharacter(String characterName){
         try{
             String encodeCharacterName = URLEncoder.encode(characterName, StandardCharsets.UTF_8);
             String link = "https://developer-lostark.game.onstove.com/armories/characters/" + encodeCharacterName + "/profiles";
 
-            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link, apiKey);
+            InputStreamReader inputStreamReader = apiClient.lostarkGetApi(link);
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(inputStreamReader, LoaCharacterDTO.class);
         } catch (Exception e) {

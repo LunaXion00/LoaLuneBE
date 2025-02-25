@@ -1,5 +1,6 @@
 package com.example.lunaproject.streamer.dto;
 
+import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,6 @@ public class StreamerWithCharacterDTO {
     private String mainCharacter;
     private String channelId;
     private String channelImageUrl;
-    private List<LoaCharacterDTO> characters;
+    private List<? extends GameCharacterDTO> characters;
     private Set<TagDTO> tags;
 }
