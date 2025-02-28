@@ -30,8 +30,9 @@ public class GameProfile {
     @Column(nullable = false)
     private GameType gameType;
 
+    @OneToOne
     @JoinColumn(name = "main_character_id")
-    private Long mainCharacterId;
+    private GameCharacter mainCharacter;
 
     @OneToMany(mappedBy="gameProfile", cascade = CascadeType.ALL)
     private List<GameCharacter> characters = new ArrayList<>();

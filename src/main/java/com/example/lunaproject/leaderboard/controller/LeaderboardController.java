@@ -1,7 +1,7 @@
 package com.example.lunaproject.leaderboard.controller;
 
 import com.example.lunaproject.global.utils.GameType;
-import com.example.lunaproject.leaderboard.dto.LeaderboardResponseDTO;
+import com.example.lunaproject.leaderboard.dto.BaseLeaderboardResDTO;
 import com.example.lunaproject.leaderboard.service.LeaderboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +18,8 @@ import java.util.List;
 public class LeaderboardController {
     private final LeaderboardService leaderboardService;
     @GetMapping
-    public ResponseEntity<List<LeaderboardResponseDTO>> getLeaderboard(@PathVariable GameType gameType){
-        List<LeaderboardResponseDTO> leaderboard = leaderboardService.getLeaderboard(gameType);
+    public ResponseEntity<List<? extends BaseLeaderboardResDTO>> getLeaderboard(@PathVariable GameType gameType){
+        List<? extends BaseLeaderboardResDTO> leaderboard = leaderboardService.getLeaderboard(gameType);
         return ResponseEntity.ok().body(leaderboard);
     }
 }

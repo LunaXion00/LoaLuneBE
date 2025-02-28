@@ -69,7 +69,7 @@ public class LoaCharacterService {
         if (!findCharacterListUUID.isEmpty()){
             for(LoaCharacter character: findCharacterListUUID){
                 if(character.getCharacterName().equals(getMainCharacter(loaProfile).getCharacterName())){
-                    loaProfile.setMainCharacterId(character.getId());
+                    loaProfile.setMainCharacter(character);
                 }
                 character.updateCharacter(dto);
             }
@@ -96,7 +96,7 @@ public class LoaCharacterService {
     }
     public GameCharacter getMainCharacter(GameProfile profile) {
         return profile.getCharacters().stream()
-                .filter(c -> c.getId().equals(profile.getMainCharacterId()))
+                .filter(c -> c.equals(profile.getMainCharacter()))
                 .findFirst()
                 .orElseThrow();
     }

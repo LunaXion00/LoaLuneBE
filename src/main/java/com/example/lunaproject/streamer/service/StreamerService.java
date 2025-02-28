@@ -73,7 +73,7 @@ public class StreamerService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 스트리머의 "+gameType+ "기록이 존재하지 않습니다."));
 
         String mainCharacterName = gameProfile.getCharacters().stream()
-                .filter(c -> c.getId().equals(gameProfile.getMainCharacterId()))
+                .filter(c -> c.equals(gameProfile.getMainCharacter()))
                 .findFirst()
                 .map(GameCharacter::getCharacterName)
                 .orElse(null);
@@ -147,7 +147,7 @@ public class StreamerService {
                 .ifPresentOrElse(
                         c -> {
                             logger.info(c.getId().toString());
-                            profile.setMainCharacterId(c.getId());
+                            profile.setMainCharacter(c);
                         },
                         () -> { throw new IllegalArgumentException("메인 캐릭터 생성 실패"); }
                 );

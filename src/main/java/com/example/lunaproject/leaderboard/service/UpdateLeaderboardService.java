@@ -33,7 +33,7 @@ public class UpdateLeaderboardService {
     private final GameProfileRepository gameProfileRepository;
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
-    @Scheduled(cron = "00 01 17 * * *")
+    @Scheduled(cron = "00 43 * * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -48,28 +48,30 @@ public class UpdateLeaderboardService {
     public void updateLeaderboard(GameType gameType) {
         List<Leaderboard> oldRanking = leaderboardRepository.findByGameType(gameType);
 
-        leaderboardRepository.deleteByGameType(gameType);
+        leaderboardRepository.deleteByGameProfile_GameType(gameType);
+
         List<Streamer> streamers = streamerRepository.findAll();
         for(Streamer streamer:streamers) streamerService.updateStreamerCharacters(streamer.getStreamerName());
+
         List<Leaderboard> newRankings = createNewLeaderboard(gameType);
         leaderboardRepository.saveAll(newRankings);
         newRankings = leaderboardRepository.findAll();
+
         assignRanking(newRankings, oldRanking);
+
         leaderboardRepository.saveAll(newRankings);
     }
     private List<Leaderboard> createNewLeaderboard(GameType gameType){
         List<GameProfile> gameProfiles = gameProfileRepository.findAllByGameType(gameType);
         return gameProfiles.stream()
                 .map(profile->{
-                    LoaCharacter mainCharacter = loaCharacterRepository.findById(profile.getMainCharacterId()).orElse(null);
+                    LoaCharacter mainCharacter = loaCharacterRepository.findById(profile.getMainCharacter().getId()).orElse(null);
                     return Leaderboard.builder()
-                            .gameType(gameType)
+                            .gameProfile(profile)
                             .rank(0)
                             .rankChange(0)
                             .rankingDetails("{\"itemLevel\": " + mainCharacter.getItemLevel() + "}")
                             .previousRankingDetails(null) // 이전 데이터는 별도 처리
-                            .streamer(profile.getStreamer())
-                            .character(mainCharacter)
                             .build();
                 })
                 .filter(Objects::nonNull)
@@ -95,8 +97,8 @@ public class UpdateLeaderboardService {
     }
     private int calculateRankChange(Leaderboard newEntry, List<Leaderboard> oldRanking) {
         return oldRanking.stream()
-                .filter(oldEntry -> oldEntry.getStreamer().equals(newEntry.getStreamer())
-                        && oldEntry.getGameType().equals(newEntry.getGameType()))
+                .filter(oldEntry -> oldEntry.getGameProfile().getStreamer().equals(newEntry.getGameProfile().getStreamer())
+                        && oldEntry.getGameProfile().getGameType().equals(newEntry.getGameProfile().getGameType()))
                 .findFirst()
                 .map(oldEntry -> oldEntry.getRank() - newEntry.getRank()) // 이전 순위 - 새 순위
                 .orElse(0);
@@ -104,8 +106,8 @@ public class UpdateLeaderboardService {
 
     private String getPreviousRankingDetails(Leaderboard newEntry, List<Leaderboard> oldRanking) {
         return oldRanking.stream()
-                .filter(oldEntry -> oldEntry.getStreamer().equals(newEntry.getStreamer())
-                        && oldEntry.getGameType().equals(newEntry.getGameType()))
+                .filter(oldEntry -> oldEntry.getGameProfile().getStreamer().equals(newEntry.getGameProfile().getStreamer())
+                        && oldEntry.getGameProfile().getGameType().equals(newEntry.getGameProfile().getGameType()))
                 .findFirst()
                 .map(Leaderboard::getRankingDetails)
                 .orElse(null); // 이전 값이 없으면 null 반환
