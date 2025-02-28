@@ -1,10 +1,13 @@
 package com.example.lunaproject.leaderboard.service;
 
+import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.game.character.repository.LoaCharacterRepository;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.entity.Leaderboard;
 import com.example.lunaproject.leaderboard.repository.LeaderboardRepository;
+import com.example.lunaproject.streamer.entity.GameProfile;
 import com.example.lunaproject.streamer.entity.Streamer;
+import com.example.lunaproject.streamer.repository.GameProfileRepository;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.lunaproject.global.utils.GlobalMethods.extractItemLevel;
 
@@ -25,9 +30,10 @@ import static com.example.lunaproject.global.utils.GlobalMethods.extractItemLeve
 public class UpdateLeaderboardService {
     private final LeaderboardRepository leaderboardRepository;
     private final LoaCharacterRepository loaCharacterRepository;
+    private final GameProfileRepository gameProfileRepository;
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
-    @Scheduled(cron = "00 00 09 * * *")
+    @Scheduled(cron = "00 01 17 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -52,20 +58,22 @@ public class UpdateLeaderboardService {
         leaderboardRepository.saveAll(newRankings);
     }
     private List<Leaderboard> createNewLeaderboard(GameType gameType){
-//        return streamerRepository.findAll().stream()
-//                .map(streamer -> loaCharacterRepository.findTopByStreamerOrderByItemLevelDesc(streamer)
-//                        .map(character -> Leaderboard.builder()
-//                                .gameType(gameType)
-//                                .rank(0) // 나중에 정렬 후 순위 지정
-//                                .rankChange(0)
-//                                .rankingDetails("{\"itemLevel\": " + character.getItemLevel() + "}")
-//                                .streamer(streamer)
-//                                .character(character)
-//                                .build())
-//                        .orElse(null))
-//                .filter(leaderboard -> leaderboard != null)
-//                .toList();
-        return null;
+        List<GameProfile> gameProfiles = gameProfileRepository.findAllByGameType(gameType);
+        return gameProfiles.stream()
+                .map(profile->{
+                    LoaCharacter mainCharacter = loaCharacterRepository.findById(profile.getMainCharacterId()).orElse(null);
+                    return Leaderboard.builder()
+                            .gameType(gameType)
+                            .rank(0)
+                            .rankChange(0)
+                            .rankingDetails("{\"itemLevel\": " + mainCharacter.getItemLevel() + "}")
+                            .previousRankingDetails(null) // 이전 데이터는 별도 처리
+                            .streamer(profile.getStreamer())
+                            .character(mainCharacter)
+                            .build();
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
     private void assignRanking(List<Leaderboard> leaderboards, List<Leaderboard> oldRanking) {
         leaderboards.sort((a, b) -> Double.compare(

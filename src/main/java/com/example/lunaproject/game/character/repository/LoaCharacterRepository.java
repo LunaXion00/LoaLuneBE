@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface LoaCharacterRepository extends JpaRepository<LoaCharacter, String> {
+public interface LoaCharacterRepository extends JpaRepository<LoaCharacter, Long> {
     @Query("select t from LoaCharacter t Where t.characterName= :Charactername")
     Optional<LoaCharacter> findByCharacterName(String charactername);
 //    Optional<LoaCharacter> findTopByStreamerOrderByItemLevelDesc(Streamer streamer);
