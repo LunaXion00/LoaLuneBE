@@ -6,6 +6,7 @@ import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -36,15 +37,15 @@ public class LostarkCharacterApiClient implements GameApiClient<LoaCharacterDTO>
     private final LostarkApiClient apiClient;
     private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
-    public List<LoaCharacterDTO> createCharacterList(String characterName){
+    public List<LoaCharacterDTO> createCharacterList(StreamerRequestDTO requestDTO){
         try{
-            JSONArray jsonArray = findCharactersByApi(characterName);
+            JSONArray jsonArray = findCharactersByApi(requestDTO.getMainCharacter());
             List<LoaCharacterDTO> dtos = new ArrayList<>();
             for(Object o: jsonArray){
                 JSONObject jsonObject = (JSONObject) o;
                 JSONObject details = findCharacterDetailsByApi(jsonObject.get("CharacterName").toString());
                 if (details == null) {
-                    logger.warn("Skipping character: " + characterName + " due to missing data.");
+                    logger.warn("Skipping character: " + requestDTO.getMainCharacter() + " due to missing data.");
                     continue; // 다음 캐릭터로 건너뜀
                 }
                 dtos.add(LoaCharacterDTO.builder()

@@ -42,24 +42,21 @@ public class StreamerService {
     private final TagRepository tagRepository;
     private final GameApiClientRegistry apiClientRegistry;
     private final CharacterFactoryRegistry characterFactoryRegistry;
-    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
+    private static final Logger logger = LoggerFactory.getLogger(StreamerService.class);
 
     public StreamerResponseDTO createStreamer(StreamerRequestDTO requestDTO) throws JsonProcessingException {
-        String mainCharacter = requestDTO.getMainCharacter();
-        String channelId = requestDTO.getChannelId();
-        GameType gameType = requestDTO.getGameType();
-        Streamer streamer = streamerRepository.findByChannelId(channelId)
+        Streamer streamer = streamerRepository.findByChannelId(requestDTO.getChannelId())
                 .orElseGet(() -> {
                     try {
-                        return createNewStreamer(channelId);
+                        return createNewStreamer(requestDTO.getChannelId());
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
                 });
-        if (hasExistingGameProfile(streamer, gameType)) {
-            throw new IllegalArgumentException("해당 스트리머의 " + gameType + " 프로필이 이미 존재합니다");
+        if (hasExistingGameProfile(streamer, requestDTO.getGameType())) {
+            throw new IllegalArgumentException("해당 스트리머의 " + requestDTO.getGameType() + " 프로필이 이미 존재합니다");
         }
-        GameProfile gameProfile = createGameProfile(streamer, gameType, mainCharacter);
+        GameProfile gameProfile = createGameProfile(streamer, requestDTO);
         Streamer savedStreamer = streamerRepository.save(streamer);
         return buildResponseDTO(savedStreamer);
     }
@@ -95,10 +92,30 @@ public class StreamerService {
                 .tags(tags)
                 .build();
     }
-    private <D extends GameCharacterDTO, T extends GameCharacter> List<T> createCharacterList(GameType gameType, String characterName, GameProfile gameProfile){
-        GameApiClient<D> apiClient = apiClientRegistry.getClient(gameType);
-        List<D> dtos = apiClient.createCharacterList(characterName);
-        CharacterFactory<T, D> factory = characterFactoryRegistry.getFactory(gameType);
+
+    private GameProfile createGameProfile(Streamer streamer, StreamerRequestDTO requestDTO) {
+        // 게임 프로필 생성
+        GameProfile gameProfile = GameProfile.builder()
+                .gameType(requestDTO.getGameType())
+                .streamer(streamer)
+                .characters(new ArrayList<>())
+                .build();
+
+        // 캐릭터 생성 및 연결
+        List<GameCharacter> characters = createCharacterList(requestDTO, gameProfile);
+        setMainCharacter(gameProfile, characters, requestDTO.getMainCharacter());
+
+        // 양방향 관계 설정
+        gameProfile.getCharacters().addAll(characters);
+        streamer.getGameProfiles().add(gameProfile);
+
+        return gameProfile;
+    }
+
+    private <D extends GameCharacterDTO, T extends GameCharacter> List<T> createCharacterList(StreamerRequestDTO requestDTO, GameProfile gameProfile){
+        GameApiClient<D> apiClient = apiClientRegistry.getClient(requestDTO.getGameType());
+        List<D> dtos = apiClient.createCharacterList(requestDTO);
+        CharacterFactory<T, D> factory = characterFactoryRegistry.getFactory(requestDTO.getGameType());
         return dtos.stream()
                 .map(dto -> {
                     T character = factory.createCharacter(dto);
@@ -120,24 +137,6 @@ public class StreamerService {
     private boolean hasExistingGameProfile(Streamer streamer, GameType gameType) {
         return streamer.getGameProfiles().stream()
                 .anyMatch(p -> p.getGameType() == gameType);
-    }
-    private GameProfile createGameProfile(Streamer streamer, GameType gameType, String mainCharacter) {
-        // 게임 프로필 생성
-        GameProfile gameProfile = GameProfile.builder()
-                .gameType(gameType)
-                .streamer(streamer)
-                .characters(new ArrayList<>())
-                .build();
-
-        // 캐릭터 생성 및 연결
-        List<GameCharacter> characters = createCharacterList(gameType, mainCharacter, gameProfile);
-        setMainCharacter(gameProfile, characters, mainCharacter);
-
-        // 양방향 관계 설정
-        gameProfile.getCharacters().addAll(characters);
-        streamer.getGameProfiles().add(gameProfile);
-
-        return gameProfile;
     }
 
     private void setMainCharacter(GameProfile profile, List<GameCharacter> characters, String mainChar) {

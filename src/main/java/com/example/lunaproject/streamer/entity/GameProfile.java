@@ -30,7 +30,7 @@ public class GameProfile {
     @Column(nullable = false)
     private GameType gameType;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "main_character_id")
     private GameCharacter mainCharacter;
 
