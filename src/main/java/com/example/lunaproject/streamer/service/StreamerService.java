@@ -8,10 +8,12 @@ import com.example.lunaproject.game.character.Factory.CharacterFactory;
 import com.example.lunaproject.game.character.Factory.CharacterFactoryRegistry;
 import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
+import com.example.lunaproject.game.character.dto.VlrtAccountDTO;
 import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.entity.VlrtAccount;
+import com.example.lunaproject.game.character.service.CharacterService;
 import com.example.lunaproject.game.character.service.LoaCharacterService;
-import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.GameProfile;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,13 +41,12 @@ import java.util.stream.Collectors;
 public class StreamerService {
     private final StreamerRepository streamerRepository;
     private final ChzzkStreamerApiClient chzzkStreamerApiClient;
-    private final LoaCharacterService loaCharacterService;
+    private final Map<GameType, CharacterService> serviceMap;
     private final TagRepository tagRepository;
     private final GameApiClientRegistry apiClientRegistry;
     private final CharacterFactoryRegistry characterFactoryRegistry;
-    private static final Logger logger = LoggerFactory.getLogger(StreamerService.class);
 
-    public StreamerResponseDTO createStreamer(StreamerRequestDTO requestDTO) throws JsonProcessingException {
+    public StreamerResponseDTO createStreamer(StreamerRequestDTO requestDTO) {
         Streamer streamer = streamerRepository.findByChannelId(requestDTO.getChannelId())
                 .orElseGet(() -> {
                     try {
@@ -145,7 +147,6 @@ public class StreamerService {
                 .findFirst()
                 .ifPresentOrElse(
                         c -> {
-                            logger.info(c.getId().toString());
                             profile.setMainCharacter(c);
                         },
                         () -> { throw new IllegalArgumentException("메인 캐릭터 생성 실패"); }
@@ -158,10 +159,11 @@ public class StreamerService {
     }
 
     @Transactional
-    public void updateStreamerCharacters(String streamerName){
+    public void updateStreamerCharacters(String streamerName, GameType gameType){
         Streamer streamer = streamerRepository.findByStreamerName(streamerName)
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
-        loaCharacterService.updateSibling(streamerName);
+        CharacterService service = serviceMap.get(gameType);
+        service.updateCharacters(streamerName);
     }
 
     @Transactional
@@ -182,6 +184,8 @@ public class StreamerService {
     private GameCharacterDTO convertToDTO(GameCharacter character) {
         if (character instanceof LoaCharacter loaChar) {
             return new LoaCharacterDTO(loaChar);
+        } else if(character instanceof VlrtAccount vlrtAccount){
+            return new VlrtAccountDTO(vlrtAccount);
         }
         throw new IllegalArgumentException("Unsupported character type: "
                 + character.getClass().getSimpleName());

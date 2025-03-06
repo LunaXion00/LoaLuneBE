@@ -1,5 +1,7 @@
 package com.example.lunaproject.game.character.dto;
 
+import com.example.lunaproject.game.character.entity.LoaCharacter;
+import com.example.lunaproject.game.character.entity.VlrtAccount;
 import com.example.lunaproject.game.character.utils.VlrtTier;
 import com.example.lunaproject.global.utils.GameServer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,4 +25,11 @@ public class VlrtAccountDTO extends GameCharacterDTO{
 
     @JsonProperty("server")
     private GameServer server;
+
+    public VlrtAccountDTO(final VlrtAccount account){
+        setCharacterName(account.getCharacterName());
+        this.tier = account.getTier();
+        this.rr = account.getRr();
+        this.server = account.getServer();
+    }
 }

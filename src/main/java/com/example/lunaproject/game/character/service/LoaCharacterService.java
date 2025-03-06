@@ -21,7 +21,7 @@ import static com.example.lunaproject.global.utils.GlobalMethods.isSameUUID;
 
 @Service
 @RequiredArgsConstructor
-public class LoaCharacterService {
+public class LoaCharacterService implements CharacterService{
     private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
     private final LoaCharacterRepository loaCharacterRepository;
@@ -42,7 +42,8 @@ public class LoaCharacterService {
         return loaCharacterRepository.save(character);
     }
     @Transactional
-    public void updateSibling(String streamerName){
+    @Override
+    public void updateCharacters(String streamerName){
         Streamer streamer = streamerRepository.get(streamerName);
 
         GameProfile loaProfile = streamer.getGameProfiles().stream()
@@ -59,6 +60,12 @@ public class LoaCharacterService {
                 })
                 .forEach(dto -> updateCharacter(dto, loaProfile));
     }
+
+    @Override
+    public GameType getGameType() {
+        return GameType.lostark;
+    }
+
     private void updateCharacter(LoaCharacterDTO dto, GameProfile loaProfile){
         List<LoaCharacter> findCharacterListUUID = loaProfile.getCharacters().stream()
                 .filter(character -> character instanceof LoaCharacter) // 타입 체크

@@ -1,9 +1,11 @@
 package com.example.lunaproject.streamer.repository;
 
+import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.entity.Streamer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +14,6 @@ public interface StreamerRepository extends JpaRepository<Streamer, Long>, Strea
     Boolean existsByChannelId(String channelId);
     Optional<Streamer> findByStreamerName(String streamerName);
     Optional<Streamer> findByChannelId(String channelId);
+
+    List<Streamer> findByGameProfiles_GameType(GameType gameType);
 }

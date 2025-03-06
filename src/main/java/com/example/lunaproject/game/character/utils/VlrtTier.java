@@ -1,49 +1,58 @@
 package com.example.lunaproject.game.character.utils;
 
+import com.example.lunaproject.leaderboard.service.UpdateLeaderboardService;
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
+@Getter
 public enum VlrtTier {
-    RADIANT("Radiant"),
+    RADIANT("RADIANT", 24),
 
-    IMMORTAL_3("Immortal 3"),
-    IMMORTAL_2("Immortal 2"),
-    IMMORTAL_1("Immortal 1"),
+    IMMORTAL_3("IMMORTAL_3", 23),
+    IMMORTAL_2("IMMORTAL_2", 22),
+    IMMORTAL_1("IMMORTAL_1", 21),
 
-    ASCENDANT_3("Ascendant 3"),
-    ASCENDANT_2("Ascendant 2"),
-    ASCENDANT_1("Ascendant 1"),
+    ASCENDANT_3("ASCENDANT_3", 20),
+    ASCENDANT_2("ASCENDANT_2", 19),
+    ASCENDANT_1("ASCENDANT_1", 18),
 
-    DIAMOND_3("Diamond 3"),
-    DIAMOND_2("Diamond 2"),
-    DIAMOND_1("Diamond 1"),
+    DIAMOND_3("DIAMOND_3", 17),
+    DIAMOND_2("DIAMOND_2",16),
+    DIAMOND_1("DIAMOND_1", 15),
 
-    PLATINUM_3("Platinum 3"),
-    PLATINUM_2("Platinum 2"),
-    PLATINUM_1("Platinum 1"),
+    PLATINUM_3("PLATINUM_3", 14),
+    PLATINUM_2("PLATINUM_2", 13),
+    PLATINUM_1("PLATINUM_1", 12),
 
-    GOLD_3("Gold 3"),
-    GOLD_2("Gold 2"),
-    GOLD_1("Gold 1"),
+    GOLD_3("GOLD_3", 11),
+    GOLD_2("GOLD_2", 10),
+    GOLD_1("GOLD_1", 9),
 
-    SILVER_3("Silver 3"),
-    SILVER_2("Silver 2"),
-    SILVER_1("Silver 1"),
+    SILVER_3("SILVER_3", 8),
+    SILVER_2("SILVER_2", 7),
+    SILVER_1("SILVER_1", 6),
 
-    BRONZE_3("Bronze 3"),
-    BRONZE_2("Bronze 2"),
-    BRONZE_1("Bronze 1"),
+    BRONZE_3("BRONZE_3", 5),
+    BRONZE_2("BRONZE_2", 4),
+    BRONZE_1("BRONZE_1", 3),
 
-    IRON_3("Iron 3"),
-    IRON_2("Iron 2"),
-    IRON_1("Iron 1"),
+    IRON_3("IRON_3", 2),
+    IRON_2("IRON_2", 1),
+    IRON_1("IRON_1", 0),
     ;
     private final String tier;
+    private final int rankValue;
 
-    VlrtTier(String type){
+    VlrtTier(String type, int rankValue){
         this.tier = type;
+        this.rankValue = rankValue;
     }
 
     public static VlrtTier fromApiString(String apiTier) {
+        final Logger logger = LoggerFactory.getLogger(VlrtTier.class);
         return Arrays.stream(values())
                 .filter(e -> e.tier.equalsIgnoreCase(apiTier.trim()))
                 .findFirst()

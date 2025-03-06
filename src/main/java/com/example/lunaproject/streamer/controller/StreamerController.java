@@ -32,15 +32,6 @@ public class StreamerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PutMapping("/{streamerName}/update-characters")
-    public ResponseEntity<String> updateStreamerCharacters(@PathVariable(required = true) String streamerName) throws IOException{
-        try{
-            service.updateStreamerCharacters(streamerName);
-            return ResponseEntity.ok().body(streamerName+"님의 캐릭터 정보가 갱신되었습니다.");
-        } catch(Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
     @PutMapping("/{channelId}/tags")
     public ResponseEntity<?> updateStreamerTags(@PathVariable(required = true) String channelId, @RequestBody TagRequestDTO tagRequestDTO) throws IOException{
         try{

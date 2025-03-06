@@ -32,6 +32,7 @@ public class VlrtAccount extends GameCharacter<VlrtAccountDTO> {
     private GameServer server;
     @Override
     public void updateCharacter(VlrtAccountDTO dto) {
-
+        tier = dto.getTier();
+        rr = dto.getRr();
     }
 }

@@ -21,9 +21,4 @@ public class GlobalMethods {
         }
         return getUUID64(url1).equals(getUUID64(url2));
     }
-
-    public static Double extractItemLevel(String rankingDetails){
-        if (rankingDetails == null) return 0.0;
-        return Double.parseDouble(rankingDetails.replace("{\"itemLevel\": ", "").replace("}", ""));
-    }
 }

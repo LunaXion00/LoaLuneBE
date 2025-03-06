@@ -1,6 +1,7 @@
-package com.example.lunaproject.leaderboard.strategy;
+package com.example.lunaproject.leaderboard.strategy.conversion;
 
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.leaderboard.strategy.conversion.LeaderboardConversionStrategy;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

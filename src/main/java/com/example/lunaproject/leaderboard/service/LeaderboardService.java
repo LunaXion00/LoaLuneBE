@@ -4,9 +4,10 @@ import com.example.lunaproject.leaderboard.dto.BaseLeaderboardResDTO;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.entity.Leaderboard;
 import com.example.lunaproject.leaderboard.repository.LeaderboardRepository;
-import com.example.lunaproject.leaderboard.strategy.ConversionStrategyRegistry;
-import com.example.lunaproject.leaderboard.strategy.LeaderboardConversionStrategy;
+import com.example.lunaproject.leaderboard.strategy.conversion.ConversionStrategyRegistry;
+import com.example.lunaproject.leaderboard.strategy.conversion.LeaderboardConversionStrategy;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,12 @@ public class LeaderboardService {
 
         return leaderboardList.stream()
                 .map(entry-> {
-                    BaseLeaderboardResDTO dto = conversionStrategy.convert(entry);
+                    BaseLeaderboardResDTO dto;
+                    try {
+                        dto = conversionStrategy.convert(entry);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());

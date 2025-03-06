@@ -1,11 +1,13 @@
 package com.example.lunaproject.api.valorant.client;
 
 import com.example.lunaproject.api.client.GameApiClient;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.game.character.dto.VlrtAccountDTO;
 import com.example.lunaproject.game.character.utils.VlrtTier;
 import com.example.lunaproject.global.utils.GameServer;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -37,7 +41,7 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
             String apiResponse = getRankByApi(parts[0], parts[1], requestDTO.getGameServer());
 
             String[] responseParts = apiResponse.split(" - ");
-            String tierString = responseParts[0];
+            String tierString = responseParts[0].replace(" ", "_");
             int rr = Integer.parseInt(responseParts[1].replace("RR.", ""));
 
             VlrtAccountDTO dto = VlrtAccountDTO.builder()
@@ -55,6 +59,7 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
 
     public String getRankByApi(String accountName, String tag, GameServer region) throws IOException, ParseException {
         String link = "https://api.kyroskoh.xyz/valorant/v1/mmr/" + region + "/" + accountName + "/" + tag;
+        logger.info(link);
         InputStreamReader inputStreamReader = apiClient.valorantGetApi(link);
 
         BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -65,4 +70,5 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
     public GameType getGameType() {
         return GameType.vlrt;
     }
+
 }

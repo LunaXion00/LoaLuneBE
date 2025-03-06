@@ -2,8 +2,6 @@ package com.example.lunaproject.api.lostark.client;
 
 import com.example.lunaproject.api.client.GameApiClient;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
-import com.example.lunaproject.game.character.entity.GameCharacter;
-import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
