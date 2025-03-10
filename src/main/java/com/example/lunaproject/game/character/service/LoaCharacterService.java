@@ -22,7 +22,6 @@ import static com.example.lunaproject.global.utils.GlobalMethods.isSameUUID;
 @Service
 @RequiredArgsConstructor
 public class LoaCharacterService implements CharacterService{
-    private static final Logger logger = LoggerFactory.getLogger(LoaCharacterService.class);
 
     private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;

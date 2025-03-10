@@ -107,7 +107,6 @@ public class LostarkCharacterApiClient implements GameApiClient<LoaCharacterDTO>
                 logger.warn("Character details not found for: " + encodedCharacterName);
                 return null; // 데이터가 없는 경우 null 반환
             }
-            logger.info(object.toString());
             return object;
         } catch (IOException e) {
             throw new RuntimeException(e);
