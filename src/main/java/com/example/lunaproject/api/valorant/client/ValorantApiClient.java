@@ -39,22 +39,34 @@ public class ValorantApiClient {
             throw new RuntimeException(e);
         }
     }
-    private InputStreamReader getInputStreamReader(HttpURLConnection httpURLConnection) {
-        try {
-            int result = httpURLConnection.getResponseCode();
-            InputStream inputStream;
-            if(result == 200) {
-                inputStream = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                return inputStreamReader;
+    private InputStreamReader getInputStreamReader(HttpURLConnection httpURLConnection) throws InterruptedException {
+        final int MAX_RETRIES = 3;
+        final int RETRY_DELAY = 10000;
+        for(int attempt=0; attempt<=MAX_RETRIES+1; attempt++) {
+            try {
+                int responseCode = httpURLConnection.getResponseCode();
+                if(responseCode == 200) {
+                    return new InputStreamReader(httpURLConnection.getInputStream());
+                } else {
+                    throw new RuntimeException("API 응답 오류 [" + responseCode + "]: "
+                            + httpURLConnection.getResponseMessage());
+                }
             }
-            else {
-                throw new RuntimeException("API 응답 오류: " + httpURLConnection.getResponseMessage());
+            catch (IllegalArgumentException e) {
+                throw e; // 파라미터 오류시 즉시 실패
             }
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("API 응답 처리 중 오류 발생: " + e.getMessage());
+            catch (Exception e) {
+                if(attempt > MAX_RETRIES) {
+                    throw new RuntimeException(MAX_RETRIES + "회 재시도 실패: " + e.getMessage(), e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("재시도 대기 중단", ie);
+                }
+            }
         }
+        throw new RuntimeException("최대 재시도 횟수 초과");
     }
 }

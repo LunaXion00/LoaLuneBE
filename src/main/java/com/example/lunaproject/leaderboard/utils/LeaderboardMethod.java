@@ -1,7 +1,6 @@
 package com.example.lunaproject.leaderboard.utils;
 
 import com.example.lunaproject.game.character.utils.VlrtTier;
-import com.example.lunaproject.leaderboard.strategy.detail.VlrtRankingDetailStrategy;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

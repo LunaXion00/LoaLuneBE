@@ -3,6 +3,7 @@ package com.example.lunaproject.api.valorant.client;
 import com.example.lunaproject.api.client.GameApiClient;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.game.character.dto.VlrtAccountDTO;
+import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.example.lunaproject.game.character.utils.VlrtTier;
 import com.example.lunaproject.global.utils.GameServer;
 import com.example.lunaproject.global.utils.GameType;
@@ -50,7 +51,6 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
                     .characterName(requestDTO.getMainCharacter())
                     .server(requestDTO.getGameServer())
                     .build();
-            logger.info("character: "+dto.getCharacterName()+" tier: "+dto.getTier().toString()+ " rr: "+dto.getRr()+" server: "+dto.getServer().toString());
             return List.of(dto);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -59,11 +59,11 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
 
     public String getRankByApi(String accountName, String tag, GameServer region) throws IOException, ParseException {
         String link = "https://api.kyroskoh.xyz/valorant/v1/mmr/" + region + "/" + accountName + "/" + tag;
-        logger.info(link);
         InputStreamReader inputStreamReader = apiClient.valorantGetApi(link);
-
         BufferedReader reader = new BufferedReader(inputStreamReader);
-        return reader.readLine();
+        String line = reader.readLine();
+        log.info(line);
+        return line;
     }
 
     @Override
