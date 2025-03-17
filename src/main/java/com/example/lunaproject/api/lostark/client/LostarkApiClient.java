@@ -20,7 +20,7 @@ public class LostarkApiClient {
         while(true){
             try{
                 ApiRateLimiter.checkAndWait();
-                HttpURLConnection httpURLConnection = getHttpURLConntection(link, "GET");
+                HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET");
                 return getInputStreamReader(httpURLConnection);
             } catch (IllegalArgumentException e) {
                 if(e.getMessage().contains("사용한도")){
@@ -39,7 +39,7 @@ public class LostarkApiClient {
             }
         }
     }
-    public HttpURLConnection getHttpURLConntection(String link, String method){
+    public HttpURLConnection getHttpURLConnection(String link, String method){
         try{
             URL url = new URL(link);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();

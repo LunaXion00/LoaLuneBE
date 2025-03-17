@@ -47,6 +47,8 @@ public class ValorantAccountService implements CharacterService{
 
         try {
             String updatedTier = apiClient.getRankByApi(parts[0], parts[1], vlrtAccount.getServer());
+            logger.info("streamerName: "+updatedTier);
+            if(updatedTier == null) return;
             String[] responseParts = updatedTier.split(" - ");
             String tierString = responseParts[0].replace(" ", "_").toUpperCase();
             int rr = Integer.parseInt(responseParts[1].replace("RR.", ""));

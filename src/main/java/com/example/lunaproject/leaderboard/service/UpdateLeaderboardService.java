@@ -33,7 +33,7 @@ public class UpdateLeaderboardService {
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboardService.class);
-    @Scheduled(cron = "00 25 21 * * *")
+    @Scheduled(cron = "00 00 9 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -52,9 +52,9 @@ public class UpdateLeaderboardService {
 
         List<Streamer> targetStreamers = streamerRepository.findByGameProfiles_GameType(gameType);
 
-//        targetStreamers.forEach(streamer ->
-//                streamerService.updateStreamerCharacters(streamer.getStreamerName(), gameType)
-//        );
+        targetStreamers.forEach(streamer ->
+                streamerService.updateStreamerCharacters(streamer.getStreamerName(), gameType)
+        );
 
         List<Leaderboard> newRankings = createNewLeaderboard(gameType);
         leaderboardRepository.saveAll(newRankings);
