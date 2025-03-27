@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -82,18 +83,36 @@ public class UpdateLeaderboardService {
     }
     private void assignRanking(List<Leaderboard> leaderboards, List<Leaderboard> oldRanking, GameType gameType) {
         RankingDetailStrategy strategy = rankingStrategies.get(gameType);
-        leaderboards.sort((a, b) -> Double.compare(
-                strategy.calculateRankValue(b.getRankingDetails()),strategy.calculateRankValue(a.getRankingDetails())
-        ));
-        int rank = 1;
+        leaderboards.sort((a, b) -> {
+            int mainCompare = Double.compare(strategy.calculateRankValue(b.getRankingDetails()), strategy.calculateRankValue(a.getRankingDetails()));
+            if(mainCompare != 0) return mainCompare;
+            LocalDateTime aDate = strategy.getRefreshDate(a.getRankingDetails());
+            LocalDateTime bDate = strategy.getRefreshDate(b.getRankingDetails());
+            return aDate.compareTo(bDate);
+        });
+        int currentRank = 1;
+        int actualPosition = 1;
+        Double prevValue = null;
+        LocalDateTime prevTime = null;
         for (Leaderboard entry : leaderboards) {
-            entry.setRank(rank++);
+            double currentValue = strategy.calculateRankValue(entry.getRankingDetails());
+            LocalDateTime currentTime =  strategy.getRefreshDate(entry.getRankingDetails());
+            if(prevValue!= null && currentValue==prevValue && currentTime.equals(prevTime)){
+                entry.setRank(currentRank);
+            } else{
+                currentRank = actualPosition;
+                entry.setRank(currentRank);
+            }
+            actualPosition++;
+            prevValue = currentValue;
+            prevTime = currentTime;
             entry.setRankChange(calculateRankChange(entry, oldRanking));
             String oldRankingDetails = getOldRankingDetails(entry, oldRanking);
             if (oldRankingDetails == null) {
                 logger.info("There is no oldRankingDetails");
                 entry.setPreviousRankingDetails(null);
             } else {
+                if(strategy.calculateRankValue(entry.getRankingDetails()) == strategy.calculateRankValue(oldRankingDetails)) entry.setRankingDetails(oldRankingDetails);
                 entry.setPreviousRankingDetails(oldRankingDetails);
             }
         }

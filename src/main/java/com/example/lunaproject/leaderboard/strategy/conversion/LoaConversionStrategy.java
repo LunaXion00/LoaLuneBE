@@ -9,6 +9,7 @@ import com.example.lunaproject.leaderboard.entity.Leaderboard;
 import com.example.lunaproject.leaderboard.strategy.conversion.LeaderboardConversionStrategy;
 import com.example.lunaproject.streamer.entity.Streamer;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 
 import static com.example.lunaproject.leaderboard.utils.LeaderboardMethod.extractItemLevel;
@@ -17,7 +18,7 @@ import static com.example.lunaproject.leaderboard.utils.LeaderboardMethod.extrac
 @RequiredArgsConstructor
 public class LoaConversionStrategy implements LeaderboardConversionStrategy {
     @Override
-    public BaseLeaderboardResDTO convert(Leaderboard leaderboard) {
+    public BaseLeaderboardResDTO convert(Leaderboard leaderboard) throws ParseException {
         GameCharacter mainCharacter = leaderboard.getGameProfile().getMainCharacter();
         Streamer streamer = leaderboard.getGameProfile().getStreamer();
         return LoaLeaderboardResDTO.builder()

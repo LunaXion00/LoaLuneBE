@@ -9,8 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // 프론트엔드 주소
-                .allowedOrigins("http://loalune.com.s3-website.ap-northeast-2.amazonaws.com")
+                .allowedOrigins("http://localhost:3000", "http://loalune.com.s3-website.ap-northeast-2.amazonaws.com")
                 .allowedMethods("*");
     }
 }
