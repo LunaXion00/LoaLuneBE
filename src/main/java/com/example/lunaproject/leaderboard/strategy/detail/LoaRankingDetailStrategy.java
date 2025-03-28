@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.example.lunaproject.leaderboard.utils.LeaderboardMethod.extractItemLevel;
@@ -23,7 +24,7 @@ public class LoaRankingDetailStrategy implements RankingDetailStrategy {
         LoaCharacter mainCharacter = loaCharacterRepository.findById(gameCharacter.getId()).orElse(null);
         return String.format("{\"itemLevel\": %f, \"refreshDate\": \"%s\"}",
                 mainCharacter.getItemLevel(),
-                LocalDateTime.now());
+                LocalDate.now());
     }
 
     @Override
@@ -41,7 +42,7 @@ public class LoaRankingDetailStrategy implements RankingDetailStrategy {
     }
 
     @Override
-    public LocalDateTime getRefreshDate(String rankingDetails) {
+    public LocalDate getRefreshDate(String rankingDetails) {
         try {
             return extractRefreshDate(rankingDetails);
         } catch (ParseException e) {

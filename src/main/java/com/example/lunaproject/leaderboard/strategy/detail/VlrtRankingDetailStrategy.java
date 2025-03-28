@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.example.lunaproject.leaderboard.utils.LeaderboardMethod.extractRefreshDate;
@@ -33,7 +34,7 @@ public class VlrtRankingDetailStrategy implements RankingDetailStrategy{
         """,
                 mainCharacter.getTier().name(), // 쌍따옴표로 감싸짐 ✅
                 mainCharacter.getRr(),
-                LocalDateTime.now()
+                LocalDate.now()
         ).replaceAll("\\s+", "");
     }
 
@@ -52,7 +53,7 @@ public class VlrtRankingDetailStrategy implements RankingDetailStrategy{
     }
 
     @Override
-    public LocalDateTime getRefreshDate(String rankingDetails) {
+    public LocalDate getRefreshDate(String rankingDetails) {
         try {
             return extractRefreshDate(rankingDetails);
         } catch (ParseException e) {

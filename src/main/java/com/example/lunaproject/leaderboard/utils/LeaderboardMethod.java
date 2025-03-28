@@ -31,15 +31,33 @@ public class LeaderboardMethod {
         VlrtTier tier = VlrtTier.fromApiString(tierName);
         return tier.getRankValue()*100+rr;
     }
-    public static LocalDateTime extractRefreshDate(String rankingDetails) throws ParseException {
+    public static LocalDate extractRefreshDate(String rankingDetails) throws ParseException {
         try {
             JSONObject json = (JSONObject) new JSONParser().parse(rankingDetails);
-            String dateStr = (String) json.get("refreshDate"); // 문자열로 먼저 추출
+            String dateStr = (String) json.get("refreshDate");
+            // 여러 날짜 형식 지원
+            DateTimeFormatter[] formatters = {
+                    DateTimeFormatter.ISO_LOCAL_DATE,
+                    DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            };
 
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-            return LocalDateTime.parse(dateStr, formatter);
-        } catch (ParseException | DateTimeParseException e) {
-            throw new IllegalArgumentException("날짜 파싱 실패: " + rankingDetails, e);
+            for (DateTimeFormatter formatter : formatters) {
+                try {
+                    if (formatter.equals(DateTimeFormatter.ISO_LOCAL_DATE_TIME)) {
+                        // LocalDateTime으로 파싱 후 LocalDate로 변환
+                        return LocalDateTime.parse(dateStr, formatter).toLocalDate();
+                    } else {
+                        return LocalDate.parse(dateStr, formatter);
+                    }
+                } catch (DateTimeParseException ignored) {
+                    // 다음 포맷 시도
+                }
+            }
+
+            throw new IllegalArgumentException("지원되지 않는 날짜 형식: " + dateStr);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("JSON 파싱 실패: " + rankingDetails, e);
         }
     }
 }

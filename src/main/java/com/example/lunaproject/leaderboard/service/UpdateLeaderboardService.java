@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class UpdateLeaderboardService {
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboardService.class);
-    @Scheduled(cron = "00 00 9 * * *")
+    @Scheduled(cron = "00 00 09 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -86,17 +87,17 @@ public class UpdateLeaderboardService {
         leaderboards.sort((a, b) -> {
             int mainCompare = Double.compare(strategy.calculateRankValue(b.getRankingDetails()), strategy.calculateRankValue(a.getRankingDetails()));
             if(mainCompare != 0) return mainCompare;
-            LocalDateTime aDate = strategy.getRefreshDate(a.getRankingDetails());
-            LocalDateTime bDate = strategy.getRefreshDate(b.getRankingDetails());
+            LocalDate aDate = strategy.getRefreshDate(a.getRankingDetails());
+            LocalDate bDate = strategy.getRefreshDate(b.getRankingDetails());
             return aDate.compareTo(bDate);
         });
         int currentRank = 1;
         int actualPosition = 1;
         Double prevValue = null;
-        LocalDateTime prevTime = null;
+        LocalDate prevTime = null;
         for (Leaderboard entry : leaderboards) {
             double currentValue = strategy.calculateRankValue(entry.getRankingDetails());
-            LocalDateTime currentTime =  strategy.getRefreshDate(entry.getRankingDetails());
+            LocalDate currentTime =  strategy.getRefreshDate(entry.getRankingDetails());
             if(prevValue!= null && currentValue==prevValue && currentTime.equals(prevTime)){
                 entry.setRank(currentRank);
             } else{
