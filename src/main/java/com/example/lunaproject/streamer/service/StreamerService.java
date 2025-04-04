@@ -15,10 +15,12 @@ import com.example.lunaproject.game.character.entity.VlrtAccount;
 import com.example.lunaproject.game.character.service.CharacterService;
 import com.example.lunaproject.game.character.service.LoaCharacterService;
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.leaderboard.service.UpdateLeaderboardService;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.entity.GameProfile;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.entity.Tag;
+import com.example.lunaproject.streamer.repository.GameProfileRepository;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
 import com.example.lunaproject.streamer.repository.TagRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,8 +45,9 @@ public class StreamerService {
     private final ChzzkStreamerApiClient chzzkStreamerApiClient;
     private final Map<GameType, CharacterService> serviceMap;
     private final TagRepository tagRepository;
-    private final GameApiClientRegistry apiClientRegistry;
-    private final CharacterFactoryRegistry characterFactoryRegistry;
+    private final GameProfileRepository gameProfileRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(StreamerService.class);
 
     public StreamerResponseDTO createStreamer(StreamerRequestDTO requestDTO) {
         Streamer streamer = streamerRepository.findByChannelId(requestDTO.getChannelId())
@@ -55,12 +58,18 @@ public class StreamerService {
                         throw new RuntimeException(e);
                     }
                 });
-        if (hasExistingGameProfile(streamer, requestDTO.getGameType())) {
-            throw new IllegalArgumentException("해당 스트리머의 " + requestDTO.getGameType() + " 프로필이 이미 존재합니다");
+        GameProfile existingProfile = streamer.getGameProfiles().stream()
+                .filter(p->p.getGameType() == requestDTO.getGameType())
+                .findFirst()
+                .orElse(null);
+        if(existingProfile != null) {
+            if(existingProfile.getCharacters().stream().anyMatch(c->c.getCharacterName().equals(requestDTO.getMainCharacter()))) throw new IllegalArgumentException("이미 등록된 캐릭터 또는 계정입니다.");
+            logger.info("이미 존재하는 계정. 미중복 캐릭터만 추가.");
+            addCharactersToProfile(existingProfile, requestDTO);
+        } else{
+            createGameProfile(streamer, requestDTO);
         }
-        GameProfile gameProfile = createGameProfile(streamer, requestDTO);
-        Streamer savedStreamer = streamerRepository.save(streamer);
-        return buildResponseDTO(savedStreamer);
+        return buildResponseDTO(streamerRepository.save(streamer));
     }
 
     public StreamerWithCharacterDTO getStreamerInfo(String streamerName, GameType gameType){
@@ -95,38 +104,6 @@ public class StreamerService {
                 .build();
     }
 
-    private GameProfile createGameProfile(Streamer streamer, StreamerRequestDTO requestDTO) {
-        // 게임 프로필 생성
-        GameProfile gameProfile = GameProfile.builder()
-                .gameType(requestDTO.getGameType())
-                .streamer(streamer)
-                .characters(new ArrayList<>())
-                .build();
-
-        // 캐릭터 생성 및 연결
-        List<GameCharacter> characters = createCharacterList(requestDTO, gameProfile);
-        setMainCharacter(gameProfile, characters, requestDTO.getMainCharacter());
-
-        // 양방향 관계 설정
-        gameProfile.getCharacters().addAll(characters);
-        streamer.getGameProfiles().add(gameProfile);
-
-        return gameProfile;
-    }
-
-    private <D extends GameCharacterDTO, T extends GameCharacter> List<T> createCharacterList(StreamerRequestDTO requestDTO, GameProfile gameProfile){
-        GameApiClient<D> apiClient = apiClientRegistry.getClient(requestDTO.getGameType());
-        List<D> dtos = apiClient.createCharacterList(requestDTO);
-        CharacterFactory<T, D> factory = characterFactoryRegistry.getFactory(requestDTO.getGameType());
-        return dtos.stream()
-                .map(dto -> {
-                    T character = factory.createCharacter(dto);
-                    character.setGameProfile(gameProfile);
-                    return character;
-                })
-                .collect(Collectors.toList());
-    }
-
     private Streamer createNewStreamer(String channelId) throws JsonProcessingException {
         ChzzkResponseDTO chzzkResponseDTO =  new ObjectMapper().readValue(chzzkStreamerApiClient.findStreamerByChannelId(channelId).toString(), ChzzkResponseDTO.class);
         ChzzkResponseDTO.Content content = chzzkResponseDTO.getContent();
@@ -136,6 +113,45 @@ public class StreamerService {
                 .channelImageUrl(content.getChannelImageUrl())
                 .build();
     }
+    private GameProfile createGameProfile(Streamer streamer, StreamerRequestDTO requestDTO) {
+        // 게임 프로필 생성
+        GameProfile gameProfile = GameProfile.builder()
+                .gameType(requestDTO.getGameType())
+                .streamer(streamer)
+                .characters(new ArrayList<>())
+                .build();
+
+        // 캐릭터 생성 및 연결
+        CharacterService service = serviceMap.get(requestDTO.getGameType());
+        List<GameCharacter> characters = service.addCharacters(requestDTO, gameProfile);
+        logger.info("createGameProfile로 생성.");
+        setMainCharacter(gameProfile, characters, requestDTO.getMainCharacter());
+
+        // 양방향 관계 설정
+        gameProfile.getCharacters().addAll(characters);
+        streamer.getGameProfiles().add(gameProfile);
+
+        return gameProfile;
+    }
+    private void addCharactersToProfile(GameProfile profile, StreamerRequestDTO requestDTO){
+        CharacterService characterService = serviceMap.get(requestDTO.getGameType());
+        List<GameCharacter> characters = characterService.addCharacters(requestDTO, profile);
+
+        List<GameCharacter> filtered = filterNewCharacters(profile, characters);
+        filtered.forEach(newChar->{
+            newChar.setGameProfile(profile);
+            profile.getCharacters().add(newChar);
+            logger.info("새로운 캐릭터: "+ requestDTO.getMainCharacter()+"가 추가되었습니다.");
+        });
+    }
+    private List<GameCharacter> filterNewCharacters(GameProfile profile, List<GameCharacter> characters){
+        return characters.stream().filter(character->!isCharacterExists(profile, character))
+                .collect(Collectors.toList());
+    }
+    private boolean isCharacterExists(GameProfile gameProfile, GameCharacter gameCharacter){
+        return gameProfile.getCharacters().stream().anyMatch(c->c.getCharacterName().equals(gameCharacter.getCharacterName()));
+    }
+
     private boolean hasExistingGameProfile(Streamer streamer, GameType gameType) {
         return streamer.getGameProfiles().stream()
                 .anyMatch(p -> p.getGameType() == gameType);
@@ -164,6 +180,16 @@ public class StreamerService {
                 .orElseThrow(() -> new IllegalArgumentException("스트리머를 찾을 수 없습니다: " + streamerName));
         CharacterService service = serviceMap.get(gameType);
         service.updateCharacters(streamerName);
+        GameProfile profile = streamer.getGameProfiles().stream()
+                .filter(p->p.getGameType()==gameType)
+                .findFirst()
+                .orElseThrow();
+
+        GameCharacter newMain = service.determineMainCharacter(profile.getCharacters());
+        profile.setMainCharacter(newMain);
+        gameProfileRepository.save(profile);
+        logger.info("메인 캐릭터 업데이트 완료: {} → {}",
+                streamerName, newMain.getCharacterName());
     }
 
     @Transactional

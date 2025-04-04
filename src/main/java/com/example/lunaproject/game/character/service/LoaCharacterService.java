@@ -1,11 +1,17 @@
 package com.example.lunaproject.game.character.service;
 
+import com.example.lunaproject.api.client.GameApiClient;
+import com.example.lunaproject.game.character.Factory.CharacterFactory;
+import com.example.lunaproject.game.character.Factory.CharacterFactoryRegistry;
+import com.example.lunaproject.game.character.Factory.LoaCharacterFactory;
+import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.LoaCharacter;
 import com.example.lunaproject.game.character.repository.LoaCharacterRepository;
 import com.example.lunaproject.api.lostark.client.LostarkCharacterApiClient;
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.example.lunaproject.streamer.entity.GameProfile;
 import com.example.lunaproject.streamer.entity.Streamer;
 import com.example.lunaproject.streamer.repository.StreamerRepository;
@@ -16,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.lunaproject.global.utils.GlobalMethods.isSameUUID;
 
@@ -26,20 +33,24 @@ public class LoaCharacterService implements CharacterService{
     private final LoaCharacterRepository loaCharacterRepository;
     private final StreamerRepository streamerRepository;
     private final LostarkCharacterApiClient apiClient;
-    @Transactional
-    public LoaCharacter addCharacterToGameProfile(LoaCharacterDTO dto, GameProfile gameProfile){
-        LoaCharacter character = LoaCharacter.builder()
-                .serverName(dto.getServerName())
-                .characterName(dto.getCharacterName())
-                .characterClassName(dto.getCharacterClassName())
-                .characterLevel(dto.getCharacterLevel())
-                .itemLevel(dto.getItemLevel())
-                .gameProfile(gameProfile)
-                .characterImage(dto.getCharacterImage())
-                .build();
-        gameProfile.getCharacters().add(character);
-        return loaCharacterRepository.save(character);
+    private final CharacterFactoryRegistry characterFactoryRegistry;
+    @Override
+    public List<GameCharacter> addCharacters(StreamerRequestDTO requestDTO, GameProfile profile) {
+        List<LoaCharacterDTO> dtos = apiClient.createCharacterList(requestDTO);
+        CharacterFactory characterFactory = characterFactoryRegistry.getFactory(GameType.lostark);
+        List<LoaCharacterDTO> filteredDtos = dtos.stream()
+                .filter(dto->!loaCharacterRepository.existsByCharacterName(dto.getCharacterName()))
+                .collect(Collectors.toList());;
+        return filteredDtos.stream()
+                .map(dto -> {
+                    GameCharacter character = characterFactory.createCharacter(dto);
+                    loaCharacterRepository.save((LoaCharacter) character);
+                    character.setGameProfile(profile);
+                    return character;
+                })
+                .collect(Collectors.toList());
     }
+
     @Transactional
     @Override
     public void updateCharacters(String streamerName){
@@ -63,6 +74,14 @@ public class LoaCharacterService implements CharacterService{
     @Override
     public GameType getGameType() {
         return GameType.lostark;
+    }
+
+    @Override
+    public GameCharacter determineMainCharacter(List<GameCharacter> characters) {
+        return characters.stream()
+                .map(c -> (LoaCharacter) c)
+                .max(Comparator.comparingDouble(LoaCharacter::getItemLevel))
+                .orElseThrow();
     }
 
     private void updateCharacter(LoaCharacterDTO dto, GameProfile loaProfile){
@@ -105,5 +124,19 @@ public class LoaCharacterService implements CharacterService{
                 .filter(c -> c.equals(profile.getMainCharacter()))
                 .findFirst()
                 .orElseThrow();
+    }
+    @Transactional
+    public LoaCharacter addCharacterToGameProfile(LoaCharacterDTO dto, GameProfile gameProfile){
+        LoaCharacter character = LoaCharacter.builder()
+                .serverName(dto.getServerName())
+                .characterName(dto.getCharacterName())
+                .characterClassName(dto.getCharacterClassName())
+                .characterLevel(dto.getCharacterLevel())
+                .itemLevel(dto.getItemLevel())
+                .gameProfile(gameProfile)
+                .characterImage(dto.getCharacterImage())
+                .build();
+        gameProfile.getCharacters().add(character);
+        return loaCharacterRepository.save(character);
     }
 }

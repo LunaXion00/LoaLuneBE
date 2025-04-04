@@ -16,7 +16,7 @@ public class LoaCharacterFactory implements CharacterFactory<LoaCharacter, LoaCh
     private final LoaCharacterRepository loaCharacterRepository;
     @Override
     public LoaCharacter createCharacter(LoaCharacterDTO dto) {
-        LoaCharacter character = LoaCharacter.builder()
+        return LoaCharacter.builder()
                 .characterName(dto.getCharacterName())
                 .serverName(dto.getServerName())
                 .characterLevel(dto.getCharacterLevel())
@@ -24,7 +24,6 @@ public class LoaCharacterFactory implements CharacterFactory<LoaCharacter, LoaCh
                 .itemLevel(dto.getItemLevel())
                 .characterImage(dto.getCharacterImage())
                 .build();
-        return loaCharacterRepository.save(character);
     }
 
     @Override

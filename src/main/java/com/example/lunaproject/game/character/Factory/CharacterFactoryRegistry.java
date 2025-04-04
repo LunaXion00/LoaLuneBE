@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class CharacterFactoryRegistry {
-    private final Map<GameType, CharacterFactory<? extends GameCharacter, ?>> factoryMap;
+    private final Map<GameType, CharacterFactory> factoryMap;
 
     @Autowired
-    public CharacterFactoryRegistry(List<CharacterFactory<?, ?>> factories) {
+    public CharacterFactoryRegistry(List<CharacterFactory> factories) {
         this.factoryMap = factories.stream()
                 .collect(Collectors.toMap(
                         CharacterFactory::getGameType, // getGameType()으로 키 추출
@@ -25,10 +25,7 @@ public class CharacterFactoryRegistry {
                 ));
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends GameCharacter, D extends GameCharacterDTO>
-    CharacterFactory<T, D> getFactory(GameType type) {
-        CharacterFactory<?, ?> factory = factoryMap.get(type);
-        return (CharacterFactory<T, D>) factory;
+    public CharacterFactory getFactory(GameType type) {
+        return factoryMap.get(type);
     }
 }

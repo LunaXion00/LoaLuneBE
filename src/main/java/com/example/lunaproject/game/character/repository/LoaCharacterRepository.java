@@ -13,4 +13,5 @@ public interface LoaCharacterRepository extends JpaRepository<LoaCharacter, Long
     @Query("select t from LoaCharacter t Where t.characterName= :Charactername")
     Optional<LoaCharacter> findByCharacterName(String charactername);
 //    Optional<LoaCharacter> findTopByStreamerOrderByItemLevelDesc(Streamer streamer);
+    boolean existsByCharacterName(String charactername);
 }

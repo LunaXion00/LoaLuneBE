@@ -1,7 +1,11 @@
 package com.example.lunaproject.game.character.service;
 
 import com.example.lunaproject.api.valorant.client.ValorantAccountApiClient;
+import com.example.lunaproject.game.character.Factory.CharacterFactory;
+import com.example.lunaproject.game.character.Factory.CharacterFactoryRegistry;
+import com.example.lunaproject.game.character.dto.LoaCharacterDTO;
 import com.example.lunaproject.game.character.dto.VlrtAccountDTO;
+import com.example.lunaproject.game.character.entity.GameCharacter;
 import com.example.lunaproject.game.character.entity.VlrtAccount;
 import com.example.lunaproject.game.character.repository.VlrtAccountRepository;
 import com.example.lunaproject.game.character.utils.VlrtTier;
@@ -18,7 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +32,28 @@ public class ValorantAccountService implements CharacterService{
     private final ValorantAccountApiClient apiClient;
     private final VlrtAccountRepository vlrtAccountRepository;
     private final StreamerRepository streamerRepository;
+    private final CharacterFactoryRegistry characterFactoryRegistry;
     private static final Logger logger = LoggerFactory.getLogger(ValorantAccountService.class);
 
     public List<VlrtAccountDTO> getAccountInfo(StreamerRequestDTO requestDTO){
         List<VlrtAccountDTO> dtos = apiClient.createCharacterList(requestDTO);
         return dtos;
+    }
+    @Override
+    public List<GameCharacter> addCharacters(StreamerRequestDTO requestDTO, GameProfile profile) {
+        List<VlrtAccountDTO> dtos = apiClient.createCharacterList(requestDTO);
+        CharacterFactory characterFactory = characterFactoryRegistry.getFactory(GameType.vlrt);
+        List<VlrtAccountDTO> filteredDtos = dtos.stream()
+                .filter(dto->!vlrtAccountRepository.existsByCharacterName(dto.getCharacterName()))
+                .collect(Collectors.toList());;
+        return filteredDtos.stream()
+                .map(dto -> {
+                    GameCharacter character = characterFactory.createCharacter(dto);
+                    vlrtAccountRepository.save((VlrtAccount) character);
+                    character.setGameProfile(profile);
+                    return character;
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -70,4 +93,14 @@ public class ValorantAccountService implements CharacterService{
     public GameType getGameType() {
         return GameType.vlrt;
     }
+
+    @Override
+    public GameCharacter determineMainCharacter(List<GameCharacter> characters) {
+        return characters.stream()
+                .map(c -> (VlrtAccount) c)
+                .max(Comparator.comparingInt(a ->
+                        a.getTier().getRankValue() * 1000 + a.getRr()))
+                .orElseThrow();
+    }
+
 }

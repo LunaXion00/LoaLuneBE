@@ -13,13 +13,12 @@ public class VlrtAccountFactory implements CharacterFactory<VlrtAccount, VlrtAcc
     private final VlrtAccountRepository vlrtAccountRepository;
     @Override
     public VlrtAccount createCharacter(VlrtAccountDTO dto) {
-        VlrtAccount character = VlrtAccount.builder()
+        return VlrtAccount.builder()
                 .characterName(dto.getCharacterName())
                 .server(dto.getServer())
                 .tier(dto.getTier())
                 .rr(dto.getRr())
                 .build();
-        return vlrtAccountRepository.save(character);
     }
 
     @Override
