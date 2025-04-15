@@ -35,7 +35,7 @@ public class UpdateLeaderboardService {
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboardService.class);
-    @Scheduled(cron = "00 00 5 * * *")
+    @Scheduled(cron = "00 00 06 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){
@@ -84,6 +84,18 @@ public class UpdateLeaderboardService {
     }
     private void assignRanking(List<Leaderboard> leaderboards, List<Leaderboard> oldRanking, GameType gameType) {
         RankingDetailStrategy strategy = rankingStrategies.get(gameType);
+        for(Leaderboard entry : leaderboards){
+            String oldRankingDetails = getOldRankingDetails(entry, oldRanking);
+            if (oldRankingDetails == null) {
+                logger.info("There is no oldRankingDetails");
+                entry.setPreviousRankingDetails(null);
+            } else {
+                if(strategy.calculateRankValue(entry.getRankingDetails()).equals(strategy.calculateRankValue(oldRankingDetails))) {
+                    entry.setRankingDetails(oldRankingDetails);
+                }
+                entry.setPreviousRankingDetails(oldRankingDetails);
+            }
+        }
         leaderboards.sort((a, b) -> {
             int mainCompare = Double.compare(strategy.calculateRankValue(b.getRankingDetails()), strategy.calculateRankValue(a.getRankingDetails()));
             if(mainCompare != 0) return mainCompare;
@@ -98,7 +110,7 @@ public class UpdateLeaderboardService {
         for (Leaderboard entry : leaderboards) {
             double currentValue = strategy.calculateRankValue(entry.getRankingDetails());
             LocalDate currentTime =  strategy.getRefreshDate(entry.getRankingDetails());
-            if(prevValue!= null && currentValue==prevValue && currentTime.equals(prevTime)){
+            if(prevValue!= null && Double.compare(currentValue,prevValue) == 0 && currentTime.equals(prevTime)){
                 entry.setRank(currentRank);
             } else{
                 currentRank = actualPosition;
@@ -108,14 +120,6 @@ public class UpdateLeaderboardService {
             prevValue = currentValue;
             prevTime = currentTime;
             entry.setRankChange(calculateRankChange(entry, oldRanking));
-            String oldRankingDetails = getOldRankingDetails(entry, oldRanking);
-            if (oldRankingDetails == null) {
-                logger.info("There is no oldRankingDetails");
-                entry.setPreviousRankingDetails(null);
-            } else {
-                if(strategy.calculateRankValue(entry.getRankingDetails()) == strategy.calculateRankValue(oldRankingDetails)) entry.setRankingDetails(oldRankingDetails);
-                entry.setPreviousRankingDetails(oldRankingDetails);
-            }
         }
     }
     private int calculateRankChange(Leaderboard newEntry, List<Leaderboard> oldRanking) {
