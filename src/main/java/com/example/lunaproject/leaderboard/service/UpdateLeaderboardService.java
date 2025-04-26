@@ -35,7 +35,7 @@ public class UpdateLeaderboardService {
     private final StreamerRepository streamerRepository;
     private final StreamerService streamerService;
     private static final Logger logger = LoggerFactory.getLogger(UpdateLeaderboardService.class);
-    @Scheduled(cron = "00 00 06 * * *")
+    @Scheduled(cron = "00 40 15 * * *")
     public void updateAllLeaderboards(){
         log.info("모든 게임의 리더보드 업데이트 시작...");
         for(GameType type:GameType.values()){

@@ -10,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TagRequestDTO {
-    private List<String> tags;
+    private List<TagDTO> tags;
 }

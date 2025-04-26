@@ -8,21 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("streamers")
 public class StreamerController {
     private final StreamerService service;
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadStreamerInfo(@RequestBody StreamerRequestDTO requestDTO) throws IOException {
-        try{
-            StreamerResponseDTO dto = service.createStreamer(requestDTO);
-            return ResponseEntity.ok("스트리머 "+dto.getStreamerName()+"님의 메인 캐릭터 "+requestDTO.getMainCharacter()+"이(가) 등록되었습니다.");
-        } catch(IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
     @GetMapping("/{streamerName}/{gameType}")
     public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, @PathVariable GameType gameType) throws IOException{
         try{
@@ -41,4 +33,13 @@ public class StreamerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+        @GetMapping("/all")
+        public ResponseEntity<?> getAllStreamers() throws IOException{
+            try{
+                List<StreamerInfoDTO> dtos = service.getAllStreamerInfo();
+                return ResponseEntity.ok().body(dtos);
+            } catch(IllegalArgumentException e){
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum GameType {
     lostark("로스트아크"),
     vlrt("발로란트"),
+    common("기본"),
     ;
     private final String type;
 

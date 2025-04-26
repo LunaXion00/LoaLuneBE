@@ -6,10 +6,14 @@ import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.leaderboard.dto.BaseLeaderboardResDTO;
 import com.example.lunaproject.leaderboard.dto.VlrtLeaderboardResDTO;
 import com.example.lunaproject.leaderboard.entity.Leaderboard;
+import com.example.lunaproject.streamer.dto.TagDTO;
 import com.example.lunaproject.streamer.entity.Streamer;
+import com.example.lunaproject.streamer.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 import static com.example.lunaproject.leaderboard.utils.LeaderboardMethod.extractVlrtRr;
 
@@ -32,6 +36,7 @@ public class VlrtConversionStrategy implements LeaderboardConversionStrategy {
                 .gameServer(((VlrtAccount)mainCharacter).getServer().toString())
                 .rrChange(extractVlrtRr(leaderboard.getRankingDetails())-extractVlrtRr(leaderboard.getPreviousRankingDetails()))
                 .isNewStreamer(leaderboard.getPreviousRankingDetails()==null)
+                .tags(streamer.getTags().stream().filter(tag-> tag.getGameType()== GameType.common || tag.getGameType() == GameType.vlrt).map(Tag::getTagName).collect(Collectors.toSet()))
                 .build();
     }
 

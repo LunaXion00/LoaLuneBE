@@ -91,7 +91,8 @@ public class StreamerService {
                 .toList();
 
         Set<TagDTO> tags = streamer.getTags().stream()
-                .map(tag -> new TagDTO(tag.getTagName()))
+                .filter(tag -> tag.getGameType().equals(GameType.common) || tag.getGameType().equals(gameType))
+                .map(tag -> new TagDTO(tag.getTagName(), tag.getGameType()))
                 .collect(Collectors.toSet());
 
         return StreamerWithCharacterDTO.builder()
@@ -104,6 +105,22 @@ public class StreamerService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public List<StreamerInfoDTO> getAllStreamerInfo() {
+        List<Streamer> streamers = streamerRepository.findAll();
+
+        return streamers.stream()
+                .map(streamer -> StreamerInfoDTO.builder()
+                        .streamerName(streamer.getStreamerName())
+                        .channelId(streamer.getChannelId())
+                        .tags(
+                                streamer.getTags().stream()
+                                        .map(tag -> new TagDTO(tag.getTagName(), tag.getGameType()))
+                                        .collect(Collectors.toSet())
+                        )
+                        .build()
+                ).toList();
+    }
     private Streamer createNewStreamer(String channelId) throws JsonProcessingException {
         ChzzkResponseDTO chzzkResponseDTO =  new ObjectMapper().readValue(chzzkStreamerApiClient.findStreamerByChannelId(channelId).toString(), ChzzkResponseDTO.class);
         ChzzkResponseDTO.Content content = chzzkResponseDTO.getContent();
@@ -152,11 +169,6 @@ public class StreamerService {
         return gameProfile.getCharacters().stream().anyMatch(c->c.getCharacterName().equals(gameCharacter.getCharacterName()));
     }
 
-    private boolean hasExistingGameProfile(Streamer streamer, GameType gameType) {
-        return streamer.getGameProfiles().stream()
-                .anyMatch(p -> p.getGameType() == gameType);
-    }
-
     private void setMainCharacter(GameProfile profile, List<GameCharacter> characters, String mainChar) {
         characters.stream()
                 .filter(c -> c.getCharacterName().equals(mainChar))
@@ -193,17 +205,18 @@ public class StreamerService {
     }
 
     @Transactional
-    public void updateStreamerTags(String channelId, List<String> tags){
+    public void updateStreamerTags(String channelId, List<TagDTO> tags){
         Streamer streamer = streamerRepository.findByChannelId(channelId).orElseThrow(()-> new IllegalArgumentException("스트리머를 찾을 수 없습니다"));
-        Set<Tag> tagSet = tags.stream()
-                .map(tagName -> tagRepository.findByTagName(tagName)
+        Set<Tag> tagEntities = tags.stream()
+                .map(tagDto -> tagRepository.findByTagNameAndGameType(tagDto.getTagName(), tagDto.getGameType())
                         .orElseGet(() -> {
                             Tag newTag = new Tag();
-                            newTag.setTagName(tagName);
+                            newTag.setTagName(tagDto.getTagName());
+                            newTag.setGameType(tagDto.getGameType());
                             return tagRepository.save(newTag);
                         }))
                 .collect(Collectors.toSet());
-        streamer.setTags(tagSet);
+        streamer.setTags(tagEntities);
         streamerRepository.save(streamer);
     }
 

@@ -1,9 +1,7 @@
 package com.example.lunaproject.streamer.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.lunaproject.global.utils.GameType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +18,9 @@ public class Tag {
     private Long id;
 
     private String tagName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GameType gameType = GameType.common;
+
 }

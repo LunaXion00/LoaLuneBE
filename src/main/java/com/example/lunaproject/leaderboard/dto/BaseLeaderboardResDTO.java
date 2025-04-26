@@ -1,7 +1,10 @@
 package com.example.lunaproject.leaderboard.dto;
 
+import com.example.lunaproject.streamer.dto.TagDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,4 +24,7 @@ public abstract class BaseLeaderboardResDTO {
 
     //신규 등록 스트리머 정보 식별
     private boolean isNewStreamer;
+
+    //필터링을 위한 태그 정보 추가
+    private Set<String> tags;
 }
