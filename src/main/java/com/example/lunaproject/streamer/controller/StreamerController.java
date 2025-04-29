@@ -24,22 +24,13 @@ public class StreamerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PutMapping("/{channelId}/tags")
-    public ResponseEntity<?> updateStreamerTags(@PathVariable(required = true) String channelId, @RequestBody TagRequestDTO tagRequestDTO) throws IOException{
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllStreamers() throws IOException{
         try{
-            service.updateStreamerTags(channelId, tagRequestDTO.getTags());
-            return ResponseEntity.ok().body("태그 갱신 완료");
-        } catch (Exception e){
+            List<StreamerInfoDTO> dtos = service.getAllStreamerInfo();
+            return ResponseEntity.ok().body(dtos);
+        } catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-        @GetMapping("/all")
-        public ResponseEntity<?> getAllStreamers() throws IOException{
-            try{
-                List<StreamerInfoDTO> dtos = service.getAllStreamerInfo();
-                return ResponseEntity.ok().body(dtos);
-            } catch(IllegalArgumentException e){
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-        }
 }
