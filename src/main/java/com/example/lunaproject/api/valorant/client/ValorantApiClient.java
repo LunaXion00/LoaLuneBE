@@ -15,9 +15,9 @@ import java.net.URL;
 @Service
 public class ValorantApiClient {
     public InputStreamReader valorantGetApi(String link){
-        final int MAX_RETRIES = 3;
-        final int RETRY_DELAY = 10000;
-        for (int attempt = 0; attempt <= MAX_RETRIES + 1; attempt++) {
+        final int MAX_RETRIES = 7;
+        final int RETRY_DELAY = 5000;
+        for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
             try {
                 HttpURLConnection httpURLConnection = getHttpURLConnection(link, "GET");
                 return getInputStreamReader(httpURLConnection);
