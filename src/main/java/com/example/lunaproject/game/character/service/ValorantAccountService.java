@@ -1,5 +1,6 @@
 package com.example.lunaproject.game.character.service;
 
+import com.example.lunaproject.api.admin.dto.ModifyCharacterDTO;
 import com.example.lunaproject.api.valorant.client.ValorantAccountApiClient;
 import com.example.lunaproject.game.character.Factory.CharacterFactory;
 import com.example.lunaproject.game.character.Factory.CharacterFactoryRegistry;
@@ -54,6 +55,13 @@ public class ValorantAccountService implements CharacterService{
                     return character;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO modifyCharacterDTO) {
+        VlrtAccount target = vlrtAccountRepository.findByCharacterNameAndServer(modifyCharacterDTO.getBeforeCharacterName(), modifyCharacterDTO.getGameServer());
+        target.setCharacterName(modifyCharacterDTO.getAfterCharacterName());
+        vlrtAccountRepository.save(target);
     }
 
     @Transactional

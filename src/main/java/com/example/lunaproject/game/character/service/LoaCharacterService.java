@@ -1,5 +1,6 @@
 package com.example.lunaproject.game.character.service;
 
+import com.example.lunaproject.api.admin.dto.ModifyCharacterDTO;
 import com.example.lunaproject.api.client.GameApiClient;
 import com.example.lunaproject.game.character.Factory.CharacterFactory;
 import com.example.lunaproject.game.character.Factory.CharacterFactoryRegistry;
@@ -49,6 +50,11 @@ public class LoaCharacterService implements CharacterService{
                     return character;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO gameCharacterDTO) {
+
     }
 
     @Transactional
