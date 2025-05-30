@@ -113,6 +113,7 @@ public class StreamerService {
                 .map(streamer -> StreamerInfoDTO.builder()
                         .streamerName(streamer.getStreamerName())
                         .channelId(streamer.getChannelId())
+                        .existGame(streamer.getGameProfiles().stream().map(GameProfile::getGameType).distinct().collect(Collectors.toList()))
                         .tags(
                                 streamer.getTags().stream()
                                         .map(tag -> new TagDTO(tag.getTagName(), tag.getGameType()))

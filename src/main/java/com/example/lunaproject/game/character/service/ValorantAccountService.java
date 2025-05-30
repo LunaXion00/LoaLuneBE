@@ -59,7 +59,7 @@ public class ValorantAccountService implements CharacterService{
 
     @Override
     public void modifyCharacterInfo(String channelId, ModifyCharacterDTO modifyCharacterDTO) {
-        VlrtAccount target = vlrtAccountRepository.findByCharacterNameAndServer(modifyCharacterDTO.getBeforeCharacterName(), modifyCharacterDTO.getGameServer());
+        VlrtAccount target = vlrtAccountRepository.findByCharacterName(modifyCharacterDTO.getBeforeCharacterName());
         target.setCharacterName(modifyCharacterDTO.getAfterCharacterName());
         vlrtAccountRepository.save(target);
     }

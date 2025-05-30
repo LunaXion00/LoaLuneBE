@@ -4,6 +4,8 @@ import com.example.lunaproject.global.utils.GameType;
 import com.example.lunaproject.streamer.dto.*;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,8 @@ import java.util.List;
 @RequestMapping("streamers")
 public class StreamerController {
     private final StreamerService service;
+    private static final Logger logger = LoggerFactory.getLogger(StreamerController.class);
+
     @GetMapping("/{streamerName}/{gameType}")
     public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, @PathVariable GameType gameType) throws IOException{
         try{

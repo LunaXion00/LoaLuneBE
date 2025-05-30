@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface VlrtAccountRepository extends JpaRepository<VlrtAccount, Long> {
     boolean existsByCharacterName(String charactername);
     VlrtAccount findByCharacterNameAndServer(String characterName, GameServer server);
+    VlrtAccount findByCharacterName(String characterName);
+
 }

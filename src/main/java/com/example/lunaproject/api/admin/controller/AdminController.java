@@ -50,7 +50,6 @@ public class AdminController {
         try{
             CharacterService characterService = serviceMap.get(modifyCharacterDTO.getGameType());
             characterService.modifyCharacterInfo(channelId, modifyCharacterDTO);
-
             return ResponseEntity.ok().body("캐릭터 수정 완료");
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
