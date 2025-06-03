@@ -1,6 +1,7 @@
 package com.example.lunaproject.api.valorant.client;
 
 import com.example.lunaproject.game.character.service.LoaCharacterService;
+import com.example.lunaproject.streamer.controller.StreamerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import java.net.URL;
 
 @Service
 public class ValorantApiClient {
+    private static final Logger logger = LoggerFactory.getLogger(ValorantApiClient.class);
+
     public InputStreamReader valorantGetApi(String link){
         final int MAX_RETRIES = 7;
         final int RETRY_DELAY = 5000;

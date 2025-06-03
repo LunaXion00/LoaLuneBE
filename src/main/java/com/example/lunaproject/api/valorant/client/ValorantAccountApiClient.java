@@ -58,7 +58,7 @@ public class ValorantAccountApiClient implements GameApiClient<VlrtAccountDTO> {
     }
 
     public String getRankByApi(String accountName, String tag, GameServer region) throws IOException, ParseException {
-        String link = "https://api.kyroskoh.xyz/valorant/v1/mmr/" + region + "/" + accountName + "/" + tag;
+        String link = "https://api.kyroskoh.xyz/valorant/v1/mmr/" + region + "/" + URLEncoder.encode(accountName, StandardCharsets.UTF_8) + "/" + URLEncoder.encode(tag, StandardCharsets.UTF_8);;
         try {
             InputStreamReader inputStreamReader = apiClient.valorantGetApi(link);
             BufferedReader reader = new BufferedReader(inputStreamReader);
