@@ -35,6 +35,8 @@ public class LoaCharacterService implements CharacterService{
     private final StreamerRepository streamerRepository;
     private final LostarkCharacterApiClient apiClient;
     private final CharacterFactoryRegistry characterFactoryRegistry;
+
+    // ------------------------------- Create Method -------------------------------
     @Override
     public List<GameCharacter> addCharacters(StreamerRequestDTO requestDTO, GameProfile profile) {
         List<LoaCharacterDTO> dtos = apiClient.createCharacterList(requestDTO);
@@ -52,15 +54,28 @@ public class LoaCharacterService implements CharacterService{
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO gameCharacterDTO) {
-
+    @Transactional
+    public LoaCharacter addCharacterToGameProfile(LoaCharacterDTO dto, GameProfile gameProfile){
+        LoaCharacter character = LoaCharacter.builder()
+                .serverName(dto.getServerName())
+                .characterName(dto.getCharacterName())
+                .characterClassName(dto.getCharacterClassName())
+                .characterLevel(dto.getCharacterLevel())
+                .itemLevel(dto.getItemLevel())
+                .gameProfile(gameProfile)
+                .characterImage(dto.getCharacterImage())
+                .build();
+        gameProfile.getCharacters().add(character);
+        return loaCharacterRepository.save(character);
     }
+    // ------------------------------- Retrieve Method -------------------------------
 
+
+    // ------------------------------- Update Method -------------------------------
     @Transactional
     @Override
-    public void updateCharacters(String streamerName){
-        Streamer streamer = streamerRepository.get(streamerName);
+    public void updateCharacters(String channelId){
+        Streamer streamer = streamerRepository.findByChannelId(channelId).orElseThrow();
 
         GameProfile loaProfile = streamer.getGameProfiles().stream()
                 .filter(p -> p.getGameType() == GameType.lostark)
@@ -75,19 +90,6 @@ public class LoaCharacterService implements CharacterService{
                     return (updated != null && updated.getCharacterImage() != null) ? updated : dto;
                 })
                 .forEach(dto -> updateCharacter(dto, loaProfile));
-    }
-
-    @Override
-    public GameType getGameType() {
-        return GameType.lostark;
-    }
-
-    @Override
-    public GameCharacter determineMainCharacter(List<GameCharacter> characters) {
-        return characters.stream()
-                .map(c -> (LoaCharacter) c)
-                .max(Comparator.comparingDouble(LoaCharacter::getItemLevel))
-                .orElseThrow();
     }
 
     private void updateCharacter(LoaCharacterDTO dto, GameProfile loaProfile){
@@ -125,24 +127,30 @@ public class LoaCharacterService implements CharacterService{
             }
         }
     }
+
+    @Override
+    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO gameCharacterDTO) {
+
+    }
+
+    // ------------------------------- Private Method -------------------------------
+    @Override
+    public GameType getGameType() {
+        return GameType.lostark;
+    }
+
+    @Override
+    public GameCharacter determineMainCharacter(List<GameCharacter> characters) {
+        return characters.stream()
+                .map(c -> (LoaCharacter) c)
+                .max(Comparator.comparingDouble(LoaCharacter::getItemLevel))
+                .orElseThrow();
+    }
+
     public GameCharacter getMainCharacter(GameProfile profile) {
         return profile.getCharacters().stream()
                 .filter(c -> c.equals(profile.getMainCharacter()))
                 .findFirst()
                 .orElseThrow();
-    }
-    @Transactional
-    public LoaCharacter addCharacterToGameProfile(LoaCharacterDTO dto, GameProfile gameProfile){
-        LoaCharacter character = LoaCharacter.builder()
-                .serverName(dto.getServerName())
-                .characterName(dto.getCharacterName())
-                .characterClassName(dto.getCharacterClassName())
-                .characterLevel(dto.getCharacterLevel())
-                .itemLevel(dto.getItemLevel())
-                .gameProfile(gameProfile)
-                .characterImage(dto.getCharacterImage())
-                .build();
-        gameProfile.getCharacters().add(character);
-        return loaCharacterRepository.save(character);
     }
 }

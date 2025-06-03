@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class VlrtAccountFactory implements CharacterFactory<VlrtAccount, VlrtAccountDTO> {
-    private final VlrtAccountRepository vlrtAccountRepository;
     @Override
     public VlrtAccount createCharacter(VlrtAccountDTO dto) {
         return VlrtAccount.builder()

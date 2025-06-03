@@ -19,10 +19,10 @@ public class StreamerController {
     private final StreamerService service;
     private static final Logger logger = LoggerFactory.getLogger(StreamerController.class);
 
-    @GetMapping("/{streamerName}/{gameType}")
-    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String streamerName, @PathVariable GameType gameType) throws IOException{
+    @GetMapping("/{channelId}/{gameType}")
+    public ResponseEntity<?> getStreamerInfo(@PathVariable(required = true) String channelId, @PathVariable GameType gameType) throws IOException{
         try{
-            StreamerWithCharacterDTO dto =  service.getStreamerInfo(streamerName, gameType);
+            StreamerWithCharacterDTO dto =  service.getStreamerInfo(channelId, gameType);
             return ResponseEntity.ok().body(dto);
         } catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());

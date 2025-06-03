@@ -36,10 +36,7 @@ public class ValorantAccountService implements CharacterService{
     private final CharacterFactoryRegistry characterFactoryRegistry;
     private static final Logger logger = LoggerFactory.getLogger(ValorantAccountService.class);
 
-    public List<VlrtAccountDTO> getAccountInfo(StreamerRequestDTO requestDTO){
-        List<VlrtAccountDTO> dtos = apiClient.createCharacterList(requestDTO);
-        return dtos;
-    }
+    // ------------------------------- Create Method -------------------------------
     @Override
     public List<GameCharacter> addCharacters(StreamerRequestDTO requestDTO, GameProfile profile) {
         List<VlrtAccountDTO> dtos = apiClient.createCharacterList(requestDTO);
@@ -56,18 +53,16 @@ public class ValorantAccountService implements CharacterService{
                 })
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO modifyCharacterDTO) {
-        VlrtAccount target = vlrtAccountRepository.findByCharacterName(modifyCharacterDTO.getBeforeCharacterName());
-        target.setCharacterName(modifyCharacterDTO.getAfterCharacterName());
-        vlrtAccountRepository.save(target);
+    // ------------------------------- Retrieve Method -------------------------------
+    public List<VlrtAccountDTO> getAccountInfo(StreamerRequestDTO requestDTO){
+        List<VlrtAccountDTO> dtos = apiClient.createCharacterList(requestDTO);
+        return dtos;
     }
-
+    // ------------------------------- Update Method -------------------------------
     @Transactional
     @Override
-    public void updateCharacters(String streamerName) {
-        Streamer streamer = streamerRepository.get(streamerName);
+    public void updateCharacters(String channelId) {
+        Streamer streamer = streamerRepository.findByChannelId(channelId).orElseThrow();
 
         GameProfile vlrtProfile = streamer.getGameProfiles().stream()
                 .filter(p -> p.getGameType() == GameType.vlrt)
@@ -96,7 +91,15 @@ public class ValorantAccountService implements CharacterService{
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public void modifyCharacterInfo(String channelId, ModifyCharacterDTO modifyCharacterDTO) {
+        VlrtAccount target = vlrtAccountRepository.findByCharacterName(modifyCharacterDTO.getBeforeCharacterName());
+        target.setCharacterName(modifyCharacterDTO.getAfterCharacterName());
+        vlrtAccountRepository.save(target);
+    }
+    // ------------------------------- Delete Method -------------------------------
 
+    // ------------------------------- Private Method -------------------------------
     @Override
     public GameType getGameType() {
         return GameType.vlrt;

@@ -55,7 +55,7 @@ public class UpdateLeaderboardService {
         List<Streamer> targetStreamers = streamerRepository.findByGameProfiles_GameType(gameType);
 
         targetStreamers.forEach(streamer ->
-                streamerService.updateStreamerCharacters(streamer.getStreamerName(), gameType)
+                streamerService.updateStreamerCharacters(streamer.getChannelId(), gameType)
         );
 
         List<Leaderboard> newRankings = createNewLeaderboard(gameType);

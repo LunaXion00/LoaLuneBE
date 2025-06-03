@@ -10,7 +10,7 @@ import com.example.lunaproject.streamer.entity.GameProfile;
 import java.util.List;
 
 public interface CharacterService {
-    void updateCharacters(String streamerName);
+    void updateCharacters(String channelId);
     GameType getGameType();
     GameCharacter determineMainCharacter(List<GameCharacter> characters);
     List<GameCharacter> addCharacters(StreamerRequestDTO dto, GameProfile profile);

@@ -13,7 +13,6 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class LoaCharacterFactory implements CharacterFactory<LoaCharacter, LoaCharacterDTO> {
-    private final LoaCharacterRepository loaCharacterRepository;
     @Override
     public LoaCharacter createCharacter(LoaCharacterDTO dto) {
         return LoaCharacter.builder()
