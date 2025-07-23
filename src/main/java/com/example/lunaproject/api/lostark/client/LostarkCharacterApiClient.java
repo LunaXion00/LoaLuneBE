@@ -51,7 +51,7 @@ public class LostarkCharacterApiClient implements GameApiClient<LoaCharacterDTO>
                                 .serverName(getStringOrNull(details.get("ServerName")))
                                 .characterClassName(getStringOrNull(details.get("CharacterClassName")))
                                 .characterLevel(Integer.parseInt(details.get("CharacterLevel").toString()))
-                                .itemLevel(Double.parseDouble(details.get("ItemMaxLevel").toString().replace(",", "")))
+                                .itemLevel(Double.parseDouble(details.get("ItemAvgLevel").toString().replace(",", "")))
                                 .characterImage(getStringOrNull(details.get("CharacterImage")))
                         .build());
             }
@@ -91,7 +91,7 @@ public class LostarkCharacterApiClient implements GameApiClient<LoaCharacterDTO>
         JSONArray filtered = new JSONArray();
         for(Object o:jsonArray){
             JSONObject obj = (JSONObject) o;
-            double itemLevel = Double.parseDouble(obj.get("ItemMaxLevel").toString().replace(",", ""));
+            double itemLevel = Double.parseDouble(obj.get("ItemAvgLevel").toString().replace(",", ""));
             if(itemLevel >= 1640D) filtered.add(obj);
         }
         return filtered;

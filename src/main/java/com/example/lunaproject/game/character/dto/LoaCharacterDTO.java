@@ -28,7 +28,7 @@ public class LoaCharacterDTO extends GameCharacterDTO{
     @JsonProperty("CharacterLevel")
     private int characterLevel;
 
-    @JsonProperty("ItemMaxLevel")
+    @JsonProperty("ItemAvgLevel")
     @JsonDeserialize(using = DoubleDeserializer.class)
     private Double itemLevel;
 
