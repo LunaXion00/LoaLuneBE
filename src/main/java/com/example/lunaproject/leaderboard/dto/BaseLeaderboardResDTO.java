@@ -4,6 +4,7 @@ import com.example.lunaproject.streamer.dto.TagDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Getter
@@ -11,7 +12,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public abstract class BaseLeaderboardResDTO {
+public abstract class BaseLeaderboardResDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     // 스트리머 정보
     private String streamerName;
     private String channelId;
