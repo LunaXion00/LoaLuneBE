@@ -24,7 +24,7 @@ public class LeaderboardService {
     private final ConversionStrategyRegistry conversionStrategyRegistry;
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardService.class);
 
-    @Cacheable(value = "leaderboard", key="#gameType.name()")
+    @Cacheable(value = "leaderboard", key="#gameType.name()", cacheManager = "redisCacheManager")
     public List<? extends BaseLeaderboardResDTO> getLeaderboard(GameType gameType){
         List<Leaderboard> leaderboardList = leaderboardRepository.findByGameType(gameType);
         LeaderboardConversionStrategy conversionStrategy = conversionStrategyRegistry.getStrategy(gameType);
