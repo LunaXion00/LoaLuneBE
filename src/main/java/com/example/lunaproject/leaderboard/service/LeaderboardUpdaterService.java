@@ -12,6 +12,7 @@ import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class LeaderboardUpdaterService {
     private final StreamerService streamerService;
     private static final Logger logger = LoggerFactory.getLogger(LeaderboardUpdaterService.class);
 
+    @CacheEvict(value = "leaderboard", key = "#gameType.name()", cacheManager = "redisCacheManager")
     public void updateLeaderboard(GameType gameType) {
         List<Leaderboard> oldRanking = leaderboardRepository.findByGameType(gameType);
 

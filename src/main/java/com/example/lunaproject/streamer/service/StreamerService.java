@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -169,6 +170,7 @@ public class StreamerService {
     }
 
     @Transactional
+    @CacheEvict(value = "leaderboard", allEntries = true, cacheManager = "redisCacheManager")
     public void updateStreamerTags(String channelId, List<TagDTO> tags){
         Streamer streamer = validateStreamerExists(channelId);
         Set<Tag> tagEntities = tags.stream()

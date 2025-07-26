@@ -4,11 +4,13 @@ import com.example.lunaproject.api.admin.dto.ModifyCharacterDTO;
 import com.example.lunaproject.game.character.dto.GameCharacterDTO;
 import com.example.lunaproject.game.character.service.CharacterService;
 import com.example.lunaproject.global.utils.GameType;
+import com.example.lunaproject.leaderboard.service.UpdateLeaderboardService;
 import com.example.lunaproject.streamer.dto.StreamerRequestDTO;
 import com.example.lunaproject.streamer.dto.StreamerResponseDTO;
 import com.example.lunaproject.streamer.dto.TagRequestDTO;
 import com.example.lunaproject.streamer.service.StreamerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,24 @@ import java.util.Map;
 public class AdminController {
     private final StreamerService streamerService;
     private final Map<GameType, CharacterService> serviceMap;
+    private final UpdateLeaderboardService updateLeaderboardService;
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/leaderboards/{gameType}/refresh")
+    public ResponseEntity<Void> refreshLeaderboard(@PathVariable String gameType) {
+        GameType type;
+        try {
+            type = GameType.valueOf(gameType);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return switch (updateLeaderboardService.refreshLeaderboard(type)) {
+            case UPDATED -> ResponseEntity.noContent().build();
+            case IN_PROGRESS -> ResponseEntity.status(HttpStatus.CONFLICT).build();
+            case UNSUPPORTED_GAME -> ResponseEntity.badRequest().build();
+        };
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/streamers/upload")

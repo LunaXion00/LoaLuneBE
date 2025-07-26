@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,9 +40,18 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager redisCacheManager(){
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(24L));
+                .entryTtl(Duration.ofHours(24));
+        // 진행 중인 캐시 채우기가 끝난 뒤 같은 캐시를 비웁니다.
+        RedisCacheWriter cacheWriter = RedisCacheWriter.lockingRedisCacheWriter(
+                redisConnectionFactory(),
+                Duration.ofMillis(50),
+                RedisCacheWriter.TtlFunction.just(Duration.ofMinutes(2)),
+                BatchStrategies.scan(1000)
+        );
 
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory())
-                .cacheDefaults(redisCacheConfiguration).build();
+        return RedisCacheManager.builder(cacheWriter)
+                .cacheDefaults(redisCacheConfiguration)
+                .transactionAware()
+                .build();
     }
 }

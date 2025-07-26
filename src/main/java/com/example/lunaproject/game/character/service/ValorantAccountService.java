@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -92,6 +93,7 @@ public class ValorantAccountService implements CharacterService{
         }
     }
     @Override
+    @CacheEvict(value = "leaderboard", key = "'vlrt'", cacheManager = "redisCacheManager")
     public void modifyCharacterInfo(String channelId, ModifyCharacterDTO modifyCharacterDTO) {
         VlrtAccount target = vlrtAccountRepository.findByCharacterName(modifyCharacterDTO.getBeforeCharacterName());
         target.setCharacterName(modifyCharacterDTO.getAfterCharacterName());
